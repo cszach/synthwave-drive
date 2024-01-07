@@ -1,16 +1,26 @@
-# Three.js Journey
+# ｓｙｎｔｈｗａｖｅ░ｄｒｉｖｅ　（ド栄ラ）
 
-## Setup
-Download [Node.js](https://nodejs.org/en/download/).
-Run this followed commands:
+## 【﻿ｅｌｅｍｅｎｔｓ】
 
-``` bash
-# Install dependencies (only the first time)
-npm install
+- [ ] ｔｅｒｒａｉｎ　゚ぴド
+- [ ] [ 憂鬱 - Sun ](https://www.youtube.com/watch?v=oxoqm05c7yA)
+- [ ] ｏｕｔｒｕｎ　ｓｋｙｌｉｎｅ　若挨演
+- [ ] ｓｙｎｔｈｗａｖｅ　ＤｅＬｏｒｅａｎ　ミぷ 
+- [ ] ｐａｌｍ　ｔｒｅｅｓ　？　真ェ因
+- [ ] ｎｅｏｎ　ｌｉｇｈｔｓ　？　真ジ煙
+- [ ] ｓｙｎｔｈｗａｖｅ　ａｅｓｔｈｅｔｉｃｓ　媛握音
+- [ ] ｒｅｔｒｏｗａｖｅ　ｍｕｓｉｃ　ネエ椅
 
-# Run the local server at localhost:8080
-npm run dev
+![ｒｅｆｅｒｅｎｃｅ](reference.gif)
 
-# Build for production in the dist/ directory
-npm run build
+## 【﻿ｓｅｔｕｐ】
+
+```shell
+ｎｐｍ　ｉｎｓｔａｌｌ
+```
+
+## 【﻿ｒｕｎ】
+
+```shell
+ｎｐｍ　ｒｕｎ　ｄｅｖ
 ```
