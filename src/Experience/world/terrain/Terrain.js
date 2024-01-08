@@ -184,7 +184,7 @@ export default class Terrain {
         .onFinishChange(debug.regenerate);
 
       this.debugFolder
-        .add(debug, "multiplier", 0.0, 100.0, 0.1)
+        .add(debug, "multiplier", 0.0, 1000.0, 0.1)
         .onFinishChange(debug.regenerate);
 
       this.debugFolder

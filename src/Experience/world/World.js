@@ -13,7 +13,7 @@ export default class World {
     this.resources.on("ready", () => {
       // Setup
       this.floor = new Floor();
-      this.terrain = new Terrain(1000, 1000, 32, 32);
+      this.terrain = new Terrain(1000, 1000, 128, 128);
       this.fox = new Fox();
       this.environment = new Environment();
     });
