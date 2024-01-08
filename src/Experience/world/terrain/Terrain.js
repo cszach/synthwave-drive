@@ -24,6 +24,7 @@ export default class Terrain {
       multiplier: 139.5,
       exp: 2.14,
       fudgeFactor: 1.17,
+      floorElevation: 0.4,
     };
 
     this.generateElevation();
@@ -83,6 +84,10 @@ export default class Terrain {
           elevation * this.config.fudgeFactor,
           this.config.exp
         );
+
+        if (elevation < this.config.floorElevation) {
+          elevation = this.config.floorElevation;
+        }
 
         this.elevation[x + y * this.verticesWidth] =
           elevation * this.config.multiplier;
@@ -201,6 +206,10 @@ export default class Terrain {
       this.debugFolder.add(this.terrainMaterial, "metalness", 0, 1, 0.01);
       this.debugFolder.add(this.terrainMaterial, "roughness", 0, 1, 0.01);
       this.debugFolder.addColor(this.wireframeMaterial, "color");
+
+      this.debugFolder
+        .add(debug, "floorElevation", 0, 1, 0.01)
+        .onFinishChange(debug.regenerate);
 
       this.debugFolder.add(debug, "regenerate");
     }
