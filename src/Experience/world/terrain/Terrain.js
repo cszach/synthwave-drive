@@ -22,6 +22,8 @@ export default class Terrain {
       frequency3: 4.0,
       amplitude3: 0.25,
       multiplier: 100,
+      exp: 1.0,
+      fudgeFactor: 1.2,
     };
 
     this.generateElevation();
@@ -76,6 +78,11 @@ export default class Terrain {
           this.config.amplitude1 +
           this.config.amplitude2 +
           this.config.amplitude3;
+
+        elevation = Math.pow(
+          elevation * this.config.fudgeFactor,
+          this.config.exp
+        );
 
         this.elevation[x + y * this.verticesWidth] =
           elevation * this.config.multiplier;
@@ -172,6 +179,14 @@ export default class Terrain {
 
       this.debugFolder
         .add(debug, "multiplier", 0.0, 100.0, 0.1)
+        .onFinishChange(debug.regenerate);
+
+      this.debugFolder
+        .add(debug, "exp", 0.01, 10.0, 0.01)
+        .onFinishChange(debug.regenerate);
+
+      this.debugFolder
+        .add(debug, "fudgeFactor", 0.01, 2.0, 0.01)
         .onFinishChange(debug.regenerate);
 
       this.debugFolder.add(debug, "regenerate");
