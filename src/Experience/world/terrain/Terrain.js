@@ -120,10 +120,14 @@ export default class Terrain {
   }
 
   setMaterial() {
-    this.material = new THREE.MeshStandardMaterial({
+    this.terrainMaterial = new THREE.MeshStandardMaterial({
       color: "#000001",
-      metalness: 0.0,
-      roughness: 1,
+      metalness: 0,
+      roughness: 0,
+    });
+
+    this.wireframeMaterial = new THREE.LineBasicMaterial({
+      color: 0xff499e,
     });
   }
 
@@ -134,8 +138,10 @@ export default class Terrain {
 
     this.mesh = new THREE.Group();
 
-    this.mesh.add(new THREE.Mesh(this.terrainGeometry, this.material));
-    this.mesh.add(new THREE.LineSegments(this.wireframeGeometry));
+    this.mesh.add(new THREE.Mesh(this.terrainGeometry, this.terrainMaterial));
+    this.mesh.add(
+      new THREE.LineSegments(this.wireframeGeometry, this.wireframeMaterial)
+    );
     this.mesh.rotateX(-Math.PI / 2);
 
     this.scene.add(this.mesh);
@@ -188,6 +194,10 @@ export default class Terrain {
       this.debugFolder
         .add(debug, "fudgeFactor", 0.01, 2.0, 0.01)
         .onFinishChange(debug.regenerate);
+
+      this.debugFolder.add(this.terrainMaterial, "metalness", 0, 1, 0.01);
+      this.debugFolder.add(this.terrainMaterial, "roughness", 0, 1, 0.01);
+      this.debugFolder.addColor(this.wireframeMaterial, "color");
 
       this.debugFolder.add(debug, "regenerate");
     }
