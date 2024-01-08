@@ -2,7 +2,7 @@ import Experience from "../Experience";
 import Environment from "./Environment";
 import Floor from "./Floor";
 import Fox from "./Fox";
-import Terrain from "./terrain/Terrain";
+import Terrain from "./Terrain";
 
 export default class World {
   constructor() {

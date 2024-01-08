@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import Experience from "../../Experience";
+import Experience from "../Experience";
 import { ImprovedNoise } from "three/examples/jsm/math/ImprovedNoise";
 
 export default class Terrain {
