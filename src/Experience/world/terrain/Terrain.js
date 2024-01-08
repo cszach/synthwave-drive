@@ -15,15 +15,15 @@ export default class Terrain {
     this.size = verticesWidth * verticesDepth;
 
     this.config = {
-      frequency1: 1.0,
+      frequency1: 14.81,
       amplitude1: 1.0,
-      frequency2: 2.0,
+      frequency2: 26.98,
       amplitude2: 0.5,
-      frequency3: 4.0,
+      frequency3: 22.11,
       amplitude3: 0.25,
-      multiplier: 100,
-      exp: 1.0,
-      fudgeFactor: 1.2,
+      multiplier: 139.5,
+      exp: 2.14,
+      fudgeFactor: 1.17,
     };
 
     this.generateElevation();
@@ -138,10 +138,13 @@ export default class Terrain {
 
     this.mesh = new THREE.Group();
 
+    // Terrain
     this.mesh.add(new THREE.Mesh(this.terrainGeometry, this.terrainMaterial));
+    // Terrain wireframe
     this.mesh.add(
       new THREE.LineSegments(this.wireframeGeometry, this.wireframeMaterial)
     );
+
     this.mesh.rotateX(-Math.PI / 2);
 
     this.scene.add(this.mesh);
