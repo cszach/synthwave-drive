@@ -6,6 +6,7 @@ export default class Terrain {
   constructor(width, depth, verticesWidth, verticesDepth) {
     this.experience = new Experience();
     this.scene = this.experience.scene;
+    this.debug = this.experience.debug;
 
     this.width = width;
     this.depth = depth;
@@ -13,16 +14,23 @@ export default class Terrain {
     this.verticesDepth = verticesDepth;
     this.size = verticesWidth * verticesDepth;
 
+    this.config = {
+      wavelength: 0.5,
+      multiplier: 100,
+    };
+
     this.generateElevation();
     this.setGeometry();
     this.setMaterial();
     this.setMesh();
+    this.setDebug();
   }
 
   generateElevation() {
     this.elevation = new Float32Array(this.size);
 
     const perlin = new ImprovedNoise();
+    const wavelength = this.config.wavelength;
 
     for (let y = 0; y < this.verticesDepth; y++) {
       for (let x = 0; x < this.verticesWidth; x++) {
@@ -30,12 +38,21 @@ export default class Terrain {
         const ny = y / this.verticesDepth;
 
         this.elevation[x + y * this.verticesWidth] =
-          (perlin.noise(2.0 * nx, 2.0 * ny, 0) * 0.5 + 0.5) * 100;
+          (perlin.noise(nx / wavelength, ny / wavelength, 0) * 0.5 + 0.5) *
+          this.config.multiplier;
       }
     }
   }
 
   setGeometry() {
+    if (this.terrainGeometry) {
+      this.terrainGeometry.dispose();
+    }
+
+    if (this.wireframeGeometry) {
+      this.wireframeGeometry.dispose();
+    }
+
     this.terrainGeometry = new THREE.PlaneGeometry(
       this.width,
       this.depth,
@@ -65,6 +82,10 @@ export default class Terrain {
   }
 
   setMesh() {
+    if (this.mesh) {
+      this.mesh.children.length = 0;
+    }
+
     this.mesh = new THREE.Group();
 
     this.mesh.add(new THREE.Mesh(this.terrainGeometry, this.material));
@@ -72,5 +93,29 @@ export default class Terrain {
     this.mesh.rotateX(-Math.PI / 2);
 
     this.scene.add(this.mesh);
+  }
+
+  setDebug() {
+    if (this.debug.active) {
+      const debug = this.config;
+
+      debug.regenerate = () => {
+        this.generateElevation();
+        this.setGeometry();
+        this.setMesh();
+      };
+
+      this.debugFolder = this.debug.ui.addFolder("Terrain");
+
+      this.debugFolder
+        .add(debug, "wavelength", 0.001, 1.0, 0.001)
+        .onFinishChange(debug.regenerate);
+
+      this.debugFolder
+        .add(debug, "multiplier", 0.0, 1000.0, 0.1)
+        .onFinishChange(debug.regenerate);
+
+      this.debugFolder.add(debug, "regenerate");
+    }
   }
 }
