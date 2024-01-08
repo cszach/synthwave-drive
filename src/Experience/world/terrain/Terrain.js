@@ -15,7 +15,12 @@ export default class Terrain {
     this.size = verticesWidth * verticesDepth;
 
     this.config = {
-      wavelength: 0.5,
+      frequency1: 1.0,
+      amplitude1: 1.0,
+      frequency2: 2.0,
+      amplitude2: 0.5,
+      frequency3: 4.0,
+      amplitude3: 0.25,
       multiplier: 100,
     };
 
@@ -30,7 +35,6 @@ export default class Terrain {
     this.elevation = new Float32Array(this.size);
 
     const perlin = new ImprovedNoise();
-    const wavelength = this.config.wavelength;
     const z = Math.random();
 
     for (let y = 0; y < this.verticesDepth; y++) {
@@ -38,9 +42,43 @@ export default class Terrain {
         const nx = x / this.verticesWidth;
         const ny = y / this.verticesDepth;
 
+        let elevation =
+          (perlin.noise(
+            nx * this.config.frequency1,
+            ny * this.config.frequency1,
+            z
+          ) *
+            0.5 +
+            0.5) *
+          this.config.amplitude1;
+
+        elevation +=
+          (perlin.noise(
+            nx * this.config.frequency2 + 5.3,
+            ny * this.config.frequency2 + 9.1,
+            z
+          ) *
+            0.5 +
+            0.5) *
+          this.config.amplitude2;
+
+        elevation +=
+          (perlin.noise(
+            nx * this.config.frequency3 + 17.8,
+            ny * this.config.frequency3 + 23.5,
+            z
+          ) *
+            0.5 +
+            0.5) *
+          this.config.amplitude3;
+
+        elevation /=
+          this.config.amplitude1 +
+          this.config.amplitude2 +
+          this.config.amplitude3;
+
         this.elevation[x + y * this.verticesWidth] =
-          (perlin.noise(nx / wavelength, ny / wavelength, z) * 0.5 + 0.5) *
-          this.config.multiplier;
+          elevation * this.config.multiplier;
       }
     }
   }
@@ -109,11 +147,31 @@ export default class Terrain {
       this.debugFolder = this.debug.ui.addFolder("Terrain");
 
       this.debugFolder
-        .add(debug, "wavelength", 0.001, 1.0, 0.001)
+        .add(debug, "frequency1", 1.0, 100.0, 0.01)
         .onFinishChange(debug.regenerate);
 
       this.debugFolder
-        .add(debug, "multiplier", 0.0, 1000.0, 0.1)
+        .add(debug, "amplitude1", 0.0, 1.0, 0.001)
+        .onFinishChange(debug.regenerate);
+
+      this.debugFolder
+        .add(debug, "frequency2", 1.0, 100.0, 0.01)
+        .onFinishChange(debug.regenerate);
+
+      this.debugFolder
+        .add(debug, "amplitude2", 0.0, 1.0, 0.001)
+        .onFinishChange(debug.regenerate);
+
+      this.debugFolder
+        .add(debug, "frequency3", 1.0, 100.0, 0.01)
+        .onFinishChange(debug.regenerate);
+
+      this.debugFolder
+        .add(debug, "amplitude3", 0.0, 1.0, 0.001)
+        .onFinishChange(debug.regenerate);
+
+      this.debugFolder
+        .add(debug, "multiplier", 0.0, 100.0, 0.1)
         .onFinishChange(debug.regenerate);
 
       this.debugFolder.add(debug, "regenerate");
