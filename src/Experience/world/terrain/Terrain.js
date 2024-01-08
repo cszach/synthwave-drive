@@ -31,6 +31,7 @@ export default class Terrain {
 
     const perlin = new ImprovedNoise();
     const wavelength = this.config.wavelength;
+    const z = Math.random();
 
     for (let y = 0; y < this.verticesDepth; y++) {
       for (let x = 0; x < this.verticesWidth; x++) {
@@ -38,7 +39,7 @@ export default class Terrain {
         const ny = y / this.verticesDepth;
 
         this.elevation[x + y * this.verticesWidth] =
-          (perlin.noise(nx / wavelength, ny / wavelength, 0) * 0.5 + 0.5) *
+          (perlin.noise(nx / wavelength, ny / wavelength, z) * 0.5 + 0.5) *
           this.config.multiplier;
       }
     }
