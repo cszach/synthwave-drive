@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import EventEmitter from "./EventEmitter";
 
 export default class Resources extends EventEmitter {
@@ -24,6 +25,11 @@ export default class Resources extends EventEmitter {
       textureLoader: new THREE.TextureLoader(),
       cubeTextureLoader: new THREE.CubeTextureLoader(),
     };
+
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath("draco/");
+
+    this.loaders.gltfLoader.setDRACOLoader(dracoLoader);
   }
 
   startLoading() {
