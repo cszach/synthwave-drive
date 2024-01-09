@@ -25,5 +25,9 @@ export default class World {
     if (this.fox) {
       this.fox.update();
     }
+
+    if (this.car) {
+      this.car.update();
+    }
   }
 }

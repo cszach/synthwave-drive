@@ -31,7 +31,31 @@ export default class Car {
 
     this.scene.add(this.model);
 
+    this.frontLeftWheel = this.model.getObjectByName("w_f_l");
+    this.frontRightWheel = this.model.getObjectByName("w_f_r");
+    this.backLeftWheel = this.model.getObjectByName("w_b_l");
+    this.backRightWheel = this.model.getObjectByName("w_b_r");
+
     console.log(this.model);
+
+    this.wheels = [
+      this.adjustWheel(this.frontLeftWheel),
+      this.adjustWheel(this.frontRightWheel),
+      this.adjustWheel(this.backLeftWheel),
+      this.adjustWheel(this.backRightWheel),
+    ];
+  }
+
+  adjustWheel(wheel) {
+    const boxHelper = new THREE.BoxHelper(wheel);
+    boxHelper.geometry.computeBoundingBox();
+
+    wheel.geometry.center();
+
+    return {
+      instance: wheel,
+      helper: boxHelper,
+    };
   }
 
   setCamera() {
@@ -41,15 +65,17 @@ export default class Car {
     camera.instance.position.add(new THREE.Vector3(1.25, 2, -7));
 
     const boundingBox = new THREE.Box3();
-    const boundingBoxSize = new THREE.Vector3();
     boundingBox.setFromObject(this.model);
-    boundingBox.getSize(boundingBoxSize);
-
-    console.log(boundingBoxSize);
 
     boundingBox.getCenter(camera.controls.target);
     camera.controls.target.y += 1;
 
     this.scene.add(new THREE.AxesHelper());
+  }
+
+  update() {
+    this.wheels.forEach((wheel) => {
+      wheel.helper.geometry.boundingBox.getCenter(wheel.instance.position);
+    });
   }
 }
