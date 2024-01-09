@@ -7,6 +7,7 @@ import World from "./world/World";
 import Resources from "./utils/Resources";
 import Debug from "./utils/Debug";
 import sources from "./sources";
+import Keyboard from "./utils/Keyboard";
 
 let instance = null;
 
@@ -28,6 +29,7 @@ export default class Experience {
     this.debug = new Debug();
     this.sizes = new Sizes();
     this.time = new Time();
+    this.keyboard = new Keyboard();
     this.scene = new THREE.Scene();
     this.resources = new Resources(sources);
     this.camera = new Camera();
