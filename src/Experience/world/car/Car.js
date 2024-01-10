@@ -1,5 +1,7 @@
 import * as THREE from "three";
-import Experience from "../Experience";
+import Experience from "../../Experience";
+import CarPhysics from "./CarPhysics";
+import CarControls from "./CarControls";
 
 export default class Car {
   constructor() {
@@ -15,6 +17,8 @@ export default class Car {
 
     this.setModel();
     this.setCamera();
+    this.setHelpers();
+    this.setDebug();
   }
 
   setModel() {
@@ -73,8 +77,39 @@ export default class Car {
     this.scene.add(new THREE.AxesHelper());
   }
 
-  update() {
+  setHelpers() {
+    const activated = this.debug.active;
+
+    this.helper = new THREE.BoxHelper(this.model);
+    this.helper.visible = activated;
+    this.scene.add(this.helper);
+
     this.wheels.forEach((wheel) => {
+      wheel.helper.visible = activated;
+      this.scene.add(wheel.helper);
+    });
+  }
+
+  setDebug() {
+    const debug = {
+      wheelsHelpersVisible: this.debug.active,
+    };
+
+    this.debugFolder = this.debug.ui.addFolder("Car");
+
+    this.debugFolder.add(this.helper, "visible").name("helperVisible");
+    this.debugFolder.add(debug, "wheelsHelpersVisible").onChange((visible) => {
+      this.wheels.forEach((wheel) => {
+        wheel.helper.visible = visible;
+      });
+    });
+  }
+
+  update() {
+    this.helper.update();
+
+    this.wheels.forEach((wheel) => {
+      wheel.helper.update();
       wheel.helper.geometry.boundingBox.getCenter(wheel.instance.position);
     });
   }
