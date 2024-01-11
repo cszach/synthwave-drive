@@ -2,6 +2,7 @@ import Experience from "../Experience";
 import Environment from "./Environment";
 import Car from "./car/Car";
 import Terrain from "./Terrain";
+import Sun from "./Sun";
 
 export default class World {
   constructor() {
@@ -12,6 +13,7 @@ export default class World {
     this.resources.on("ready", () => {
       // Setup
       this.terrain = new Terrain();
+      this.sun = new Sun();
       this.car = new Car();
       this.environment = new Environment();
     });
@@ -20,6 +22,10 @@ export default class World {
   update() {
     if (this.car) {
       this.car.update();
+    }
+
+    if (this.sun) {
+      this.sun.update();
     }
   }
 }
