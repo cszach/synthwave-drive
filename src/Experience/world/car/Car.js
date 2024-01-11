@@ -112,14 +112,17 @@ export default class Car {
     //   wheel.quaternion.copy(this.physics.wheelBodies[index].quaternion);
     // });
 
-    // this.updateCamera();
+    this.updateCamera();
   }
 
   updateCamera() {
     const camera = this.experience.camera;
 
-    camera.instance.position.copy(this.model.position);
-    camera.instance.position.add(new THREE.Vector3(1.25, 2, -7));
+    // Position camera behind car
+    camera.instance.position.copy(
+      this.model.localToWorld(new THREE.Vector3(0, 3, 17))
+    );
+    camera.instance.quaternion.copy(this.model.quaternion);
 
     const boundingBox = new THREE.Box3();
     boundingBox.setFromObject(this.model);
