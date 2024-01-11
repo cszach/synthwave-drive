@@ -22,11 +22,6 @@ export default [
     path: "textures/dirt/normal.jpg",
   },
   {
-    name: "foxModel",
-    type: "gltfModel",
-    path: "models/Fox/glTF/Fox.gltf",
-  },
-  {
     name: "carModel",
     type: "gltfModel",
     path: "models/Car/dmc12.glb",
