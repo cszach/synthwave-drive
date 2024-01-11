@@ -13,7 +13,8 @@ export default class Terrain {
       depth: 1000,
       verticesWidth: 128,
       verticesDepth: 128,
-      zFactor: Math.random(),
+      // zFactor: Math.random(),
+      zFactor: 0.57, // TODO: set back to random later
       frequency1: 14.81,
       amplitude1: 1.0,
       frequency2: 26.98,
@@ -90,7 +91,7 @@ export default class Terrain {
           elevation = this.config.floorElevation;
         }
 
-        this.elevation[x + y * verticesWidth] =
+        this.elevation[x + y * verticesDepth] =
           elevation * this.config.multiplier;
       }
     }

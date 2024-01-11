@@ -15,54 +15,107 @@ export default class Car {
     // Setup
     this.resource = this.resources.items.carModel;
 
-    this.setModel();
-    this.setCamera();
-    this.setHelpers();
-    this.setDebug();
-  }
-
-  setModel() {
-    this.model = this.resource.scene;
-
     // 1 unit in the Three.js world is 1 meter. Scale factor was calculated by
     // taking the length of the model when imported and the length from
     // https://www.deloreandirectory.com/specs/. Had to convert from inches to
     // meters also, oops.
-    this.model.scale.setScalar(0.422958305);
+    this.scale = 0.422958305;
 
-    this.model.position.y =
-      this.terrain.config.floorElevation * this.terrain.config.multiplier + 0.3;
+    this.setModel();
+    this.setHelpers();
+    if (this.debug.active) this.setDebug();
+
+    const wheelBoundingBox = new THREE.Box3().setFromObject(this.wheels[0]);
+    const carBoundingBox = new THREE.Box3().setFromObject(this.model);
+
+    // Physics
+    this.physics = new CarPhysics(
+      carBoundingBox,
+      wheelBoundingBox,
+      this.wheels,
+      this.scale
+    );
+    this.controls = new CarControls(this.physics.vehicle);
+  }
+
+  setModel() {
+    this.model = this.resource.scene;
+    console.log(this.model);
+
+    this.model.scale.setScalar(this.scale);
+
+    this.model.position.set(
+      0,
+      this.terrain.config.floorElevation * this.terrain.config.multiplier + 2,
+      0
+    );
 
     this.scene.add(this.model);
 
-    this.frontLeftWheel = this.model.getObjectByName("w_f_l");
-    this.frontRightWheel = this.model.getObjectByName("w_f_r");
-    this.backLeftWheel = this.model.getObjectByName("w_b_l");
-    this.backRightWheel = this.model.getObjectByName("w_b_r");
-
-    console.log(this.model);
-
     this.wheels = [
-      this.adjustWheel(this.frontLeftWheel),
-      this.adjustWheel(this.frontRightWheel),
-      this.adjustWheel(this.backLeftWheel),
-      this.adjustWheel(this.backRightWheel),
+      this.model.getObjectByName("w_b_l"),
+      this.model.getObjectByName("w_b_r"),
+      this.model.getObjectByName("w_f_l"),
+      this.model.getObjectByName("w_f_r"),
     ];
   }
 
-  adjustWheel(wheel) {
-    const boxHelper = new THREE.BoxHelper(wheel);
-    boxHelper.geometry.computeBoundingBox();
+  setHelpers() {
+    this.boxHelper = new THREE.BoxHelper(this.model);
 
-    wheel.geometry.center();
+    this.axesHelper = new THREE.AxesHelper();
+    this.axesHelper.position.copy(this.model.position);
+    this.axesHelper.position.y += 1;
 
-    return {
-      instance: wheel,
-      helper: boxHelper,
-    };
+    this.wheelHelpers = this.wheels.map((wheel) => {
+      const helper = new THREE.BoxHelper(wheel);
+      return helper;
+    });
   }
 
-  setCamera() {
+  setDebug() {
+    this.debugFolder = this.debug.ui.addFolder("Car");
+
+    const debug = {
+      wheelHelpers: true,
+    };
+
+    this.debugFolder.add(this.boxHelper, "visible").name("boxHelper");
+    this.debugFolder.add(this.axesHelper, "visible").name("axesHelper");
+    this.debugFolder.add(debug, "wheelHelpers").onChange((enabled) => {
+      this.wheelHelpers.forEach((wheelHelper) => {
+        wheelHelper.visible = enabled;
+      });
+    });
+
+    // Add helpers to the scene
+    this.scene.add(this.boxHelper);
+    this.scene.add(this.axesHelper);
+    this.wheelHelpers.forEach((wheelHelper) => {
+      this.scene.add(wheelHelper);
+    });
+  }
+
+  update() {
+    this.boxHelper.update();
+    this.wheelHelpers.forEach((wheelHelper) => {
+      wheelHelper.update();
+    });
+
+    this.physics.update();
+
+    this.model.position.copy(this.physics.chassisBody.position);
+    this.model.quaternion.copy(this.physics.chassisBody.quaternion);
+
+    // TODO: fix rotation
+    // this.wheels.forEach((wheel, index) => {
+    //   wheel.quaternion.copy(this.physics.wheelBodies[index].quaternion);
+    // });
+
+    // this.updateCamera();
+  }
+
+  updateCamera() {
     const camera = this.experience.camera;
 
     camera.instance.position.copy(this.model.position);
@@ -73,44 +126,5 @@ export default class Car {
 
     boundingBox.getCenter(camera.controls.target);
     camera.controls.target.y += 1;
-
-    this.scene.add(new THREE.AxesHelper());
-  }
-
-  setHelpers() {
-    const activated = this.debug.active;
-
-    this.helper = new THREE.BoxHelper(this.model);
-    this.helper.visible = activated;
-    this.scene.add(this.helper);
-
-    this.wheels.forEach((wheel) => {
-      wheel.helper.visible = activated;
-      this.scene.add(wheel.helper);
-    });
-  }
-
-  setDebug() {
-    const debug = {
-      wheelsHelpersVisible: this.debug.active,
-    };
-
-    this.debugFolder = this.debug.ui.addFolder("Car");
-
-    this.debugFolder.add(this.helper, "visible").name("helperVisible");
-    this.debugFolder.add(debug, "wheelsHelpersVisible").onChange((visible) => {
-      this.wheels.forEach((wheel) => {
-        wheel.helper.visible = visible;
-      });
-    });
-  }
-
-  update() {
-    this.helper.update();
-
-    this.wheels.forEach((wheel) => {
-      wheel.helper.update();
-      wheel.helper.geometry.boundingBox.getCenter(wheel.instance.position);
-    });
   }
 }

@@ -7,17 +7,13 @@ export default class Keyboard extends EventEmitter {
     this.keyStatus = {};
 
     window.addEventListener("keydown", (e) => {
-      if (this.keyStatus[e.key]) {
-        return;
-      }
-
       this.keyStatus[e.key] = true;
       this.trigger("keydown", [e.key]);
     });
 
     window.addEventListener("keyup", (e) => {
       this.keyStatus[e.key] = false;
-      this.trigger("keyup");
+      this.trigger("keyup", [e.key]);
     });
   }
 }
