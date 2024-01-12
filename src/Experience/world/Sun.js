@@ -12,7 +12,9 @@ export default class Sun {
 
     // TODO: Move config to parent
     this.config = {
+      numGaps: 3,
       gapStart: 0.6,
+      gapEnd: 0.4,
       initialGapSize: 0.05,
     };
 
@@ -27,15 +29,48 @@ export default class Sun {
   }
 
   setMaterial() {
+    const { numGaps, gapStart, gapEnd, initialGapSize } = this.config;
+    const { gapSizes, height } = this.computeGapSizes(
+      numGaps,
+      gapStart,
+      gapEnd,
+      initialGapSize
+    );
+
     this.material = new THREE.ShaderMaterial({
       vertexShader: sunVertexShader,
       fragmentShader: sunFragmentShader,
       transparent: true,
       uniforms: {
-        gapStart: { value: this.config.gapStart },
-        initialGapSize: { value: this.config.initialGapSize },
+        numGaps: { value: numGaps },
+        gapStart: { value: gapStart },
+        gapEnd: { value: gapEnd },
+        initialGapSize: { value: initialGapSize },
+        gapSizes: { value: gapSizes },
+        height: { value: height },
       },
     });
+  }
+
+  computeGapSizes(numGaps, gapStart, gapEnd, initialGapSize) {
+    const gapSizeDecrementPercentage = 1.0 / numGaps;
+    const gapSizes = [];
+    let sumGapSizes = 0;
+
+    for (
+      let i = 0, percentage = 1.0;
+      i < numGaps;
+      i++, percentage -= gapSizeDecrementPercentage
+    ) {
+      const gapSize = initialGapSize * percentage;
+
+      gapSizes.push(gapSize);
+      sumGapSizes += gapSize;
+    }
+
+    const height = (gapStart - gapEnd - sumGapSizes) / numGaps;
+
+    return { gapSizes, height };
   }
 
   setMesh() {
@@ -49,12 +84,41 @@ export default class Sun {
   setDebug() {
     this.debugFolder = this.debug.ui.addFolder("Sun");
 
+    const debug = {
+      update: () => {
+        const numGaps = this.material.uniforms.numGaps.value;
+        const gapStart = this.material.uniforms.gapStart.value;
+        const gapEnd = this.material.uniforms.gapEnd.value;
+        const initialGapSize = this.material.uniforms.initialGapSize.value;
+
+        const { gapSizes, height } = this.computeGapSizes(
+          numGaps,
+          gapStart,
+          gapEnd,
+          initialGapSize
+        );
+
+        this.material.uniforms.gapSizes.value = gapSizes;
+        this.material.uniforms.height.value = height;
+      },
+    };
+
+    this.debugFolder
+      .add(this.material.uniforms.numGaps, "value", 1, 5, 1)
+      .name("numGaps")
+      .onChange(debug.update);
     this.debugFolder
       .add(this.material.uniforms.gapStart, "value", 0.0, 1.0, 0.01)
-      .name("gapStart");
+      .name("gapStart")
+      .onChange(debug.update);
+    this.debugFolder
+      .add(this.material.uniforms.gapEnd, "value", 0.0, 1.0, 0.01)
+      .name("gapEnd")
+      .onChange(debug.update);
     this.debugFolder
       .add(this.material.uniforms.initialGapSize, "value", 0.0, 1.0, 0.01)
-      .name("initialGapSize");
+      .name("initialGapSize")
+      .onChange(debug.update);
   }
 
   update() {}
