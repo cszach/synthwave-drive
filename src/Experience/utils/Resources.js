@@ -16,7 +16,9 @@ export default class Resources extends EventEmitter {
     this.loaded = 0;
 
     this.setLoaders();
-    this.startLoading();
+    // FIXME: experience won't load if there is no resources: event is triggered
+    // before World is created
+    this.toLoad > 0 ? this.startLoading() : this.trigger("ready");
   }
 
   setLoaders() {
