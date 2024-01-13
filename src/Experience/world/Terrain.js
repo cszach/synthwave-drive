@@ -6,6 +6,7 @@ export default class Terrain {
   constructor() {
     this.experience = new Experience();
     this.scene = this.experience.scene;
+    this.colorPalette = this.experience.world.colorPalette;
     this.debug = this.experience.debug;
 
     this.config = {
@@ -134,7 +135,7 @@ export default class Terrain {
     });
 
     this.wireframeMaterial = new THREE.LineBasicMaterial({
-      color: 0xff499e,
+      color: this.colorPalette.pink,
     });
   }
 
