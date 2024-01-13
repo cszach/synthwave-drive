@@ -12,10 +12,11 @@ export default class Sun {
 
     // TODO: Move config to parent
     this.config = {
-      numGaps: 3,
-      gapStart: 0.6,
-      gapEnd: 0.4,
-      initialGapSize: 0.05,
+      lower: 0.6,
+      upper: 0.4,
+      offset: 0.3,
+      compression: 4,
+      timeMultiplier: 0.001,
     };
 
     this.setGeometry();
@@ -29,48 +30,19 @@ export default class Sun {
   }
 
   setMaterial() {
-    const { numGaps, gapStart, gapEnd, initialGapSize } = this.config;
-    const { gapSizes, height } = this.computeGapSizes(
-      numGaps,
-      gapStart,
-      gapEnd,
-      initialGapSize
-    );
-
     this.material = new THREE.ShaderMaterial({
       vertexShader: sunVertexShader,
       fragmentShader: sunFragmentShader,
       transparent: true,
       uniforms: {
-        numGaps: { value: numGaps },
-        gapStart: { value: gapStart },
-        gapEnd: { value: gapEnd },
-        initialGapSize: { value: initialGapSize },
-        gapSizes: { value: gapSizes },
-        height: { value: height },
+        lower: { value: this.config.lower },
+        upper: { value: this.config.upper },
+        offset: { value: this.config.offset },
+        compression: { value: this.config.compression },
+        timeMultiplier: { value: this.config.timeMultiplier },
+        timeElapsed: { value: 0 },
       },
     });
-  }
-
-  computeGapSizes(numGaps, gapStart, gapEnd, initialGapSize) {
-    const gapSizeDecrementPercentage = 1.0 / numGaps;
-    const gapSizes = [];
-    let sumGapSizes = 0;
-
-    for (
-      let i = 0, percentage = 1.0;
-      i < numGaps;
-      i++, percentage -= gapSizeDecrementPercentage
-    ) {
-      const gapSize = initialGapSize * percentage;
-
-      gapSizes.push(gapSize);
-      sumGapSizes += gapSize;
-    }
-
-    const height = (gapStart - gapEnd - sumGapSizes) / numGaps;
-
-    return { gapSizes, height };
   }
 
   setMesh() {
@@ -84,42 +56,24 @@ export default class Sun {
   setDebug() {
     this.debugFolder = this.debug.ui.addFolder("Sun");
 
-    const debug = {
-      update: () => {
-        const numGaps = this.material.uniforms.numGaps.value;
-        const gapStart = this.material.uniforms.gapStart.value;
-        const gapEnd = this.material.uniforms.gapEnd.value;
-        const initialGapSize = this.material.uniforms.initialGapSize.value;
-
-        const { gapSizes, height } = this.computeGapSizes(
-          numGaps,
-          gapStart,
-          gapEnd,
-          initialGapSize
-        );
-
-        this.material.uniforms.gapSizes.value = gapSizes;
-        this.material.uniforms.height.value = height;
-      },
-    };
-
     this.debugFolder
-      .add(this.material.uniforms.numGaps, "value", 1, 5, 1)
-      .name("numGaps")
-      .onChange(debug.update);
+      .add(this.material.uniforms.lower, "value", 0.0, 1.0, 0.01)
+      .name("lower");
     this.debugFolder
-      .add(this.material.uniforms.gapStart, "value", 0.0, 1.0, 0.01)
-      .name("gapStart")
-      .onChange(debug.update);
+      .add(this.material.uniforms.upper, "value", 0.0, 1.0, 0.01)
+      .name("upper");
     this.debugFolder
-      .add(this.material.uniforms.gapEnd, "value", 0.0, 1.0, 0.01)
-      .name("gapEnd")
-      .onChange(debug.update);
+      .add(this.material.uniforms.offset, "value", 0.0, 1.0, 0.01)
+      .name("offset");
     this.debugFolder
-      .add(this.material.uniforms.initialGapSize, "value", 0.0, 1.0, 0.01)
-      .name("initialGapSize")
-      .onChange(debug.update);
+      .add(this.material.uniforms.compression, "value", 0.001, 10.0, 0.001)
+      .name("compression");
+    this.debugFolder
+      .add(this.material.uniforms.timeMultiplier, "value", 0.0, 1.0, 0.001)
+      .name("timeMultiplier");
   }
 
-  update() {}
+  update() {
+    this.material.uniforms.timeElapsed.value = this.time.elapsed;
+  }
 }
