@@ -1,8 +1,11 @@
+// https://coolors.co/palette/ffd319-ffb21c-ff901f-ff2975-ff19e8-03fff0-3be528-151515
 export default {
-  indigo: "#3f2a56",
-  pink: "#e0457b",
-  orange: "#ed9b33",
-  blue: "#5461c8",
-  blue2: "#7a93dc",
-  blue3: "#051c2c",
+  gold: "#FFD319",
+  yellow: "#FFB21C",
+  orange: "FF901F",
+  rose: "#FF2975",
+  fuchsia: "#FF19E8",
+  cyan: "#03FFF0",
+  green: "#3BE528",
+  night: "#151515",
 };

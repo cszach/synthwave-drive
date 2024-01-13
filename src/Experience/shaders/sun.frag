@@ -5,6 +5,9 @@ uniform float timeElapsed;
 uniform float compression;
 uniform float offset;
 uniform float timeMultiplier;
+uniform float sunRadius;
+uniform float lerpStart;
+uniform float lerpEnd;
 uniform vec3 bottomColor;
 uniform vec3 topColor;
 
@@ -15,7 +18,7 @@ float wave(float x) {
 }
 
 void main() {
-  bool isSun = step(distance(vUv, vec2(0.5)), 0.2) == 1.0;
+  bool isSun = step(distance(vUv, vec2(0.5)), sunRadius) == 1.0;
   float alpha = isSun ? 1.0 : 0.0;
 
   if (vUv.y < lower && vUv.y > upper && wave(vUv.y) > 0.0) {
@@ -23,5 +26,6 @@ void main() {
   }
 
   gl_FragColor = vec4(
-      mix(bottomColor, topColor, (vUv.y - upper) / (lower - upper)), alpha);
+      mix(topColor, bottomColor, (vUv.y - lerpStart) / (lerpEnd - lerpStart)),
+      alpha);
 }

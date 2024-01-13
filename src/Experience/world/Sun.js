@@ -7,6 +7,7 @@ export default class Sun {
   constructor() {
     this.experience = new Experience();
     this.scene = this.experience.scene;
+    this.colorPalette = this.experience.world.colorPalette;
     this.terrain = this.experience.world.terrain;
     this.time = this.experience.time;
     this.debug = this.experience.debug;
@@ -18,8 +19,9 @@ export default class Sun {
       offset: 0.3,
       compression: 4,
       timeMultiplier: 0.001,
-      bottomColor: new THREE.Color(0xffd319),
-      topColor: new THREE.Color(0xff2975),
+      sunRadius: 0.2,
+      lerpStart: 0.3,
+      lerpEnd: 0.5,
     };
 
     this.setGeometry();
@@ -43,8 +45,11 @@ export default class Sun {
         offset: { value: this.config.offset },
         compression: { value: this.config.compression },
         timeMultiplier: { value: this.config.timeMultiplier },
-        bottomColor: { value: this.config.bottomColor },
-        topColor: { value: this.config.topColor },
+        sunRadius: { value: this.config.sunRadius },
+        lerpStart: { value: this.config.lerpStart },
+        lerpEnd: { value: this.config.lerpEnd },
+        bottomColor: { value: new THREE.Color(this.colorPalette.rose) },
+        topColor: { value: new THREE.Color(this.colorPalette.gold) },
         timeElapsed: { value: 0 },
       },
     });
@@ -84,6 +89,15 @@ export default class Sun {
     this.debugFolder
       .addColor(this.material.uniforms.topColor, "value")
       .name("topColor");
+    this.debugFolder
+      .add(this.material.uniforms.sunRadius, "value", 0.0, 0.5, 0.01)
+      .name("sunRadius");
+    this.debugFolder
+      .add(this.material.uniforms.lerpStart, "value", 0.0, 1.0, 0.01)
+      .name("lerpStart");
+    this.debugFolder
+      .add(this.material.uniforms.lerpEnd, "value", 0.0, 1.0, 0.01)
+      .name("lerpEnd");
   }
 
   update() {
