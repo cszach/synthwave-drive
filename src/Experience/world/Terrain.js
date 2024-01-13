@@ -14,7 +14,7 @@ export default class Terrain {
       verticesWidth: 128,
       verticesDepth: 128,
       // zFactor: Math.random(),
-      zFactor: 0.57, // TODO: set back to random later
+      zFactor: 0.914, // TODO: set back to random later
       frequency1: 14.81,
       amplitude1: 1.0,
       frequency2: 26.98,
