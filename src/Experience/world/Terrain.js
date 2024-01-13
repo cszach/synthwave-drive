@@ -129,13 +129,13 @@ export default class Terrain {
 
   setMaterial() {
     this.terrainMaterial = new THREE.MeshStandardMaterial({
-      color: "#000001",
+      color: this.colorPalette.night,
       metalness: 0,
       roughness: 0,
     });
 
     this.wireframeMaterial = new THREE.LineBasicMaterial({
-      color: this.colorPalette.pink,
+      color: this.colorPalette.fuchsia,
     });
   }
 
