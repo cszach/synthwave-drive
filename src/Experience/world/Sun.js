@@ -17,6 +17,8 @@ export default class Sun {
       offset: 0.3,
       compression: 4,
       timeMultiplier: 0.001,
+      bottomColor: new THREE.Color(0xffd319),
+      topColor: new THREE.Color(0xff2975),
     };
 
     this.setGeometry();
@@ -40,6 +42,8 @@ export default class Sun {
         offset: { value: this.config.offset },
         compression: { value: this.config.compression },
         timeMultiplier: { value: this.config.timeMultiplier },
+        bottomColor: { value: this.config.bottomColor },
+        topColor: { value: this.config.topColor },
         timeElapsed: { value: 0 },
       },
     });
@@ -71,6 +75,12 @@ export default class Sun {
     this.debugFolder
       .add(this.material.uniforms.timeMultiplier, "value", 0.0, 1.0, 0.001)
       .name("timeMultiplier");
+    this.debugFolder
+      .addColor(this.material.uniforms.bottomColor, "value")
+      .name("bottomColor");
+    this.debugFolder
+      .addColor(this.material.uniforms.topColor, "value")
+      .name("topColor");
   }
 
   update() {
