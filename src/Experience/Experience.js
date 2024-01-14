@@ -27,6 +27,7 @@ export default class Experience {
     this.canvas = canvas;
 
     // Setup
+    this.colorPalette = colorPalette;
     this.debug = new Debug();
     this.sizes = new Sizes();
     this.time = new Time();
@@ -35,7 +36,6 @@ export default class Experience {
     this.resources = new Resources(sources);
     this.camera = new Camera();
     this.renderer = new Renderer();
-    this.colorPalette = colorPalette;
     this.world = new World();
 
     this.resources.on("ready", () => {
@@ -43,6 +43,8 @@ export default class Experience {
         this.debug.ui.foldersRecursive().forEach((folder) => {
           folder.close();
         });
+
+        this.debug.ui.show();
       }
     });
 

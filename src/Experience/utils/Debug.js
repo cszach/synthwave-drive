@@ -6,6 +6,7 @@ export default class Debug {
 
     if (this.active) {
       this.ui = new GUI();
+      this.ui.hide(); // show on event "ready"
     }
   }
 }
