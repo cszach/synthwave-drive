@@ -6,7 +6,7 @@ export default class Terrain {
   constructor() {
     this.experience = new Experience();
     this.scene = this.experience.scene;
-    this.colorPalette = this.experience.world.colorPalette;
+    this.colorPalette = this.experience.colorPalette;
     this.debug = this.experience.debug;
 
     this.config = {

@@ -8,6 +8,7 @@ import Resources from "./utils/Resources";
 import Debug from "./utils/Debug";
 import sources from "./sources";
 import Keyboard from "./utils/Keyboard";
+import colorPalette from "./colorPalette";
 
 let instance = null;
 
@@ -34,6 +35,7 @@ export default class Experience {
     this.resources = new Resources(sources);
     this.camera = new Camera();
     this.renderer = new Renderer();
+    this.colorPalette = colorPalette;
     this.world = new World();
 
     // Sizes resize event

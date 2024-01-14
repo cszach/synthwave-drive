@@ -7,7 +7,7 @@ export default class Sun {
   constructor() {
     this.experience = new Experience();
     this.scene = this.experience.scene;
-    this.colorPalette = this.experience.world.colorPalette;
+    this.colorPalette = this.experience.colorPalette;
     this.terrain = this.experience.world.terrain;
     this.time = this.experience.time;
     this.debug = this.experience.debug;
