@@ -67,8 +67,6 @@ export default class Sun {
 
   setMesh() {
     this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.mesh.position.y =
-      this.terrain.config.floorElevation * this.terrain.config.multiplier;
     this.mesh.position.z = 1000;
     this.mesh.rotation.x = Math.PI;
 

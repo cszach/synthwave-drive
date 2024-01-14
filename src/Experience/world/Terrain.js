@@ -181,7 +181,9 @@ export default class Terrain {
     this.mesh.add(
       new THREE.LineSegments(this.wireframeGeometry, this.wireframeMaterial)
     );
-    this.mesh.rotateX(-Math.PI / 2);
+    // Make sure the floor's world y position is 0.
+    this.mesh.position.y = -this.config.floorElevation * this.config.multiplier;
+    this.mesh.rotation.x = -Math.PI / 2;
 
     this.scene.add(this.mesh);
   }

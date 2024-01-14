@@ -169,7 +169,7 @@ export default class CarPhysics {
         (this.terrain.config.verticesWidth - 1) *
         this.heightfieldShape.elementSize
       ) / 2,
-      0,
+      -this.terrain.config.floorElevation * this.terrain.config.multiplier,
       -(
         (this.terrain.config.verticesDepth - 1) *
         this.heightfieldShape.elementSize

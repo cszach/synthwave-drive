@@ -44,11 +44,7 @@ export default class Car {
 
     this.model.scale.setScalar(this.scale);
 
-    this.model.position.set(
-      0,
-      this.terrain.config.floorElevation * this.terrain.config.multiplier + 2,
-      0
-    );
+    this.model.position.set(0, 2, 0);
 
     this.scene.add(this.model);
 
