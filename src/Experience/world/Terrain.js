@@ -32,9 +32,10 @@ export default class Terrain {
     this.setGeometry();
     this.setMaterial();
     this.setMesh();
-    this.setDebug();
+    if (this.debug.active) this.setDebug();
   }
 
+  // Thanks to tutorial from https://www.redblobgames.com/maps/terrain-from-noise/
   generateElevation() {
     const verticesWidth = this.config.verticesWidth;
     const verticesDepth = this.config.verticesDepth;
@@ -146,101 +147,58 @@ export default class Terrain {
 
     this.mesh = new THREE.Group();
 
-    // Terrain
     this.mesh.add(new THREE.Mesh(this.terrainGeometry, this.terrainMaterial));
-    // Terrain wireframe
     this.mesh.add(
       new THREE.LineSegments(this.wireframeGeometry, this.wireframeMaterial)
     );
-
     this.mesh.rotateX(-Math.PI / 2);
 
     this.scene.add(this.mesh);
   }
 
-  setDebug() {
-    if (this.debug.active) {
-      const debug = this.config;
-
-      debug.regenerate = (keepZ) => {
-        if (!keepZ) {
-          this.config.zFactor = Math.random();
-        }
-
-        this.generateElevation();
-        this.setGeometry();
-        this.setMesh();
-      };
-
-      const regenerateWithoutChangingZ = debug.regenerate.bind(null, true);
-
-      this.debugFolder = this.debug.ui.addFolder("Terrain");
-
-      this.debugFolder
-        .add(debug, "width", 100, 2000, 1)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder
-        .add(debug, "depth", 100, 2000, 1)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder
-        .add(debug, "verticesWidth", 8, 512, 1)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder
-        .add(debug, "verticesDepth", 8, 512, 1)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder
-        .add(debug, "zFactor", 0, 1, 0.001)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder
-        .add(debug, "frequency1", 1.0, 100.0, 0.01)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder
-        .add(debug, "amplitude1", 0.0, 1.0, 0.001)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder
-        .add(debug, "frequency2", 1.0, 100.0, 0.01)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder
-        .add(debug, "amplitude2", 0.0, 1.0, 0.001)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder
-        .add(debug, "frequency3", 1.0, 100.0, 0.01)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder
-        .add(debug, "amplitude3", 0.0, 1.0, 0.001)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder
-        .add(debug, "multiplier", 0.0, 1000.0, 0.1)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder
-        .add(debug, "exp", 0.01, 10.0, 0.01)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder
-        .add(debug, "fudgeFactor", 0.01, 2.0, 0.01)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder.add(this.terrainMaterial, "metalness", 0, 1, 0.01);
-      this.debugFolder.add(this.terrainMaterial, "roughness", 0, 1, 0.01);
-      this.debugFolder.addColor(this.wireframeMaterial, "color");
-
-      this.debugFolder
-        .add(debug, "floorElevation", 0, 1, 0.01)
-        .onFinishChange(regenerateWithoutChangingZ);
-
-      this.debugFolder.add(debug, "regenerate");
+  regenerate(changeZ = true) {
+    if (changeZ) {
+      this.config.zFactor = Math.random();
     }
+
+    this.generateElevation();
+    this.setGeometry();
+    this.setMesh();
+  }
+
+  setDebug() {
+    const debug = this.config;
+
+    this.debugFolder = this.debug.ui.addFolder("Terrain");
+
+    const terrainGeometryFolder = this.debugFolder
+      .addFolder("Terrain geometry")
+      .onFinishChange(this.regenerate.bind(this, false));
+
+    terrainGeometryFolder.add(debug, "width", 100, 2000, 1);
+    terrainGeometryFolder.add(debug, "depth", 100, 2000, 1);
+    terrainGeometryFolder.add(debug, "verticesWidth", 8, 512, 1);
+    terrainGeometryFolder.add(debug, "verticesDepth", 8, 512, 1);
+    const zControl = terrainGeometryFolder.add(debug, "zFactor", 0, 1, 0.001);
+    terrainGeometryFolder.add(debug, "frequency1", 1.0, 100.0, 0.01);
+    terrainGeometryFolder.add(debug, "amplitude1", 0.0, 1.0, 0.001);
+    terrainGeometryFolder.add(debug, "frequency2", 1.0, 100.0, 0.01);
+    terrainGeometryFolder.add(debug, "amplitude2", 0.0, 1.0, 0.001);
+    terrainGeometryFolder.add(debug, "frequency3", 1.0, 100.0, 0.01);
+    terrainGeometryFolder.add(debug, "amplitude3", 0.0, 1.0, 0.001);
+    terrainGeometryFolder.add(debug, "multiplier", 0.0, 1000.0, 0.1);
+    terrainGeometryFolder.add(debug, "exp", 0.01, 10.0, 0.01);
+    terrainGeometryFolder.add(debug, "fudgeFactor", 0.01, 2.0, 0.01);
+    terrainGeometryFolder.add(debug, "floorElevation", 0, 1, 0.01);
+    terrainGeometryFolder
+      .add(this, "regenerate")
+      .onChange(zControl.updateDisplay.bind(zControl));
+
+    const terrainMaterialFolder =
+      this.debugFolder.addFolder("Terrain material");
+
+    terrainMaterialFolder.add(this.terrainMaterial, "metalness", 0, 1, 0.01);
+    terrainMaterialFolder.add(this.terrainMaterial, "roughness", 0, 1, 0.01);
+    terrainMaterialFolder.addColor(this.wireframeMaterial, "color");
   }
 }
