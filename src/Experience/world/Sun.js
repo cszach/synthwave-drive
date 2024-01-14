@@ -12,7 +12,10 @@ export default class Sun {
     this.colorPalette = this.experience.colorPalette;
     this.debug = this.experience.debug;
 
-    this.config = {
+    this.initialConfig = {
+      /** The elevation (y value) of the sun. */
+      elevation: 0,
+
       /** The UV y coordinate where gaps appear. */
       gapsLower: 0.6,
       /** The UV y coordinate where gaps disappear. */
@@ -50,14 +53,14 @@ export default class Sun {
       fragmentShader: sunFragmentShader,
       transparent: true,
       uniforms: {
-        gapsLower: { value: this.config.gapsLower },
-        gapsUpper: { value: this.config.gapsUpper },
-        offset: { value: this.config.offset },
-        compression: { value: this.config.compression },
-        timeMultiplier: { value: this.config.timeMultiplier },
-        sunRadius: { value: this.config.sunRadius },
-        lerpStart: { value: this.config.lerpStart },
-        lerpEnd: { value: this.config.lerpEnd },
+        gapsLower: { value: this.initialConfig.gapsLower },
+        gapsUpper: { value: this.initialConfig.gapsUpper },
+        offset: { value: this.initialConfig.offset },
+        compression: { value: this.initialConfig.compression },
+        timeMultiplier: { value: this.initialConfig.timeMultiplier },
+        sunRadius: { value: this.initialConfig.sunRadius },
+        lerpStart: { value: this.initialConfig.lerpStart },
+        lerpEnd: { value: this.initialConfig.lerpEnd },
         bottomColor: { value: new THREE.Color(this.colorPalette.rose) },
         topColor: { value: new THREE.Color(this.colorPalette.gold) },
         timeElapsed: { value: 0 }, // in milliseconds
@@ -67,6 +70,7 @@ export default class Sun {
 
   setMesh() {
     this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.mesh.position.y = this.initialConfig.elevation;
     this.mesh.position.z = 1000;
     this.mesh.rotation.x = Math.PI;
 
@@ -76,6 +80,9 @@ export default class Sun {
   setDebug() {
     this.debugFolder = this.debug.ui.addFolder("Sun");
 
+    this.debugFolder
+      .add(this.mesh.position, "y", -1000, 1000, 1)
+      .name("elevation");
     this.debugFolder
       .add(this.material.uniforms.gapsLower, "value", 0.0, 1.0, 0.01)
       .name("gapsLower");
