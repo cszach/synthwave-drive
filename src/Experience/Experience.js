@@ -13,7 +13,7 @@ import colorPalette from "./colorPalette";
 let instance = null;
 
 export default class Experience {
-  constructor(canvas) {
+  constructor(canvas, config) {
     if (instance) {
       return instance;
     }
@@ -28,7 +28,11 @@ export default class Experience {
 
     // Setup
     this.colorPalette = colorPalette;
-    this.debug = new Debug();
+    this.debug = new Debug(
+      config.debugActive,
+      config.carHelpersEnabled,
+      config.physicsHelpersEnabled
+    );
     this.sizes = new Sizes();
     this.time = new Time();
     this.keyboard = new Keyboard();

@@ -1,8 +1,10 @@
 import GUI from "lil-gui";
 
 export default class Debug {
-  constructor() {
-    this.active = window.location.hash === "#debug";
+  constructor(debugActive, carHelpersEnabled, physicsHelpersEnabled) {
+    this.active = debugActive;
+    this.carHelpersEnabled = carHelpersEnabled;
+    this.physicsHelpersEnabled = physicsHelpersEnabled;
 
     if (this.active) {
       this.ui = new GUI();

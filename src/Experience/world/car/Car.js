@@ -25,13 +25,10 @@ export default class Car {
     this.setHelpers();
     if (this.debug.active) this.setDebug();
 
-    const wheelBoundingBox = new THREE.Box3().setFromObject(this.wheels[0]);
-    const carBoundingBox = new THREE.Box3().setFromObject(this.model);
-
     // Physics
     this.physics = new CarPhysics(
-      carBoundingBox,
-      wheelBoundingBox,
+      new THREE.Box3().setFromObject(this.model),
+      new THREE.Box3().setFromObject(this.wheels[0]),
       this.wheels,
       this.scale
     );
@@ -40,14 +37,13 @@ export default class Car {
 
   setModel() {
     this.model = this.resource.scene;
-    console.log(this.model);
-
     this.model.scale.setScalar(this.scale);
-
     this.model.position.set(0, 2, 0);
 
     this.scene.add(this.model);
 
+    // Must add the back wheels first. The first 2 wheels are for propulsion.
+    // The last 2 are for steering.
     this.wheels = [
       this.model.getObjectByName("w_b_l"),
       this.model.getObjectByName("w_b_r"),
@@ -58,13 +54,15 @@ export default class Car {
 
   setHelpers() {
     this.boxHelper = new THREE.BoxHelper(this.model);
+    this.scene.add(this.boxHelper);
 
     this.axesHelper = new THREE.AxesHelper();
-    this.axesHelper.position.copy(this.model.position);
-    this.axesHelper.position.y += 1;
+    this.scene.add(this.axesHelper);
 
     this.wheelHelpers = this.wheels.map((wheel) => {
       const helper = new THREE.BoxHelper(wheel);
+      this.scene.add(helper);
+
       return helper;
     });
   }
@@ -72,8 +70,19 @@ export default class Car {
   setDebug() {
     this.debugFolder = this.debug.ui.addFolder("Car");
 
+    // Set visibility based on debug config
+
+    this.boxHelper.visible = this.debug.carHelpersEnabled;
+    this.axesHelper.visible = this.debug.carHelpersEnabled;
+
+    this.wheelHelpers.forEach((wheelHelper) => {
+      wheelHelper.visible = this.debug.carHelpersEnabled;
+    });
+
+    // Add to debug folder
+
     const debug = {
-      wheelHelpers: true,
+      wheelHelpers: this.debug.carHelpersEnabled,
     };
 
     this.debugFolder.add(this.boxHelper, "visible").name("boxHelper");
@@ -83,20 +92,21 @@ export default class Car {
         wheelHelper.visible = enabled;
       });
     });
-
-    // Add helpers to the scene
-    this.scene.add(this.boxHelper);
-    this.scene.add(this.axesHelper);
-    this.wheelHelpers.forEach((wheelHelper) => {
-      this.scene.add(wheelHelper);
-    });
   }
 
   update() {
+    // Update helpers
+
     this.boxHelper.update();
+
+    this.axesHelper.position.copy(this.model.position);
+    this.axesHelper.position.y += 1;
+
     this.wheelHelpers.forEach((wheelHelper) => {
       wheelHelper.update();
     });
+
+    // Update physics
 
     this.physics.update();
 
@@ -115,15 +125,10 @@ export default class Car {
     const camera = this.experience.camera;
 
     // Position camera behind car
+    // TODO: multiple-cameras setup
     camera.instance.position.copy(
       this.model.localToWorld(new THREE.Vector3(0, 3, 17))
     );
     camera.instance.quaternion.copy(this.model.quaternion);
-
-    const boundingBox = new THREE.Box3();
-    boundingBox.setFromObject(this.model);
-
-    boundingBox.getCenter(camera.controls.target);
-    camera.controls.target.y += 1;
   }
 }
