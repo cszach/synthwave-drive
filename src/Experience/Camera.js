@@ -8,19 +8,28 @@ export default class Camera {
     this.sizes = this.experience.sizes;
     this.scene = this.experience.scene;
     this.canvas = this.experience.canvas;
+    this.debug = this.experience.debug;
+
+    this.config = {
+      fov: 35,
+      near: 0.1,
+      far: 20000,
+    };
 
     this.setInstance();
     this.setOrbitControls();
+    if (this.debug.active) this.setDebug();
   }
 
   setInstance() {
     this.instance = new THREE.PerspectiveCamera(
-      35,
+      this.config.fov,
       this.sizes.width / this.sizes.height,
-      0.1,
-      20000
+      this.config.near,
+      this.config.far
     );
-    this.instance.position.set(0, 56, 10);
+    // Position is set in world/Car
+
     this.scene.add(this.instance);
   }
 
@@ -28,6 +37,18 @@ export default class Camera {
     this.controls = new OrbitControls(this.instance, this.canvas);
     this.controls.enableDamping = true;
     this.controls.target = new THREE.Vector3(0, 56, 0);
+  }
+
+  setDebug() {
+    this.debugFolder = this.debug.ui.addFolder("Camera");
+
+    this.debugFolder.add(this.instance, "fov", 10, 120, 1);
+    this.debugFolder.add(this.instance, "near", 0.01, 2, 0.01);
+    this.debugFolder.add(this.instance, "far", 100, 50000, 1);
+
+    this.debugFolder.onChange(
+      this.instance.updateProjectionMatrix.bind(this.instance)
+    );
   }
 
   resize() {
