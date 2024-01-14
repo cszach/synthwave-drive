@@ -38,6 +38,14 @@ export default class Experience {
     this.colorPalette = colorPalette;
     this.world = new World();
 
+    this.resources.on("ready", () => {
+      if (this.debug.active) {
+        this.debug.ui.foldersRecursive().forEach((folder) => {
+          folder.close();
+        });
+      }
+    });
+
     // Sizes resize event
     this.sizes.on("resize", () => {
       this.resize();
