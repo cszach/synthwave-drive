@@ -13,7 +13,6 @@ export default class World {
     this.colorPalette = colorPalette;
 
     this.resources.on("ready", () => {
-      // Setup
       this.terrain = new Terrain();
       this.sun = new Sun();
       this.car = new Car();
