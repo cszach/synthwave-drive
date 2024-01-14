@@ -1,5 +1,5 @@
-uniform float lower;
-uniform float upper;
+uniform float gapsLower;
+uniform float gapsUpper;
 uniform float timeElapsed;
 
 uniform float compression;
@@ -13,6 +13,11 @@ uniform vec3 topColor;
 
 varying vec2 vUv;
 
+/**
+ * A sinoid wave function. Positive y values correlate to a gap on the sun.
+ *
+ * https://www.desmos.com/calculator/fazmd7fceq
+ */
 float wave(float x) {
   return sin(compression / (x - offset) - timeElapsed * timeMultiplier);
 }
@@ -21,11 +26,10 @@ void main() {
   bool isSun = step(distance(vUv, vec2(0.5)), sunRadius) == 1.0;
   float alpha = isSun ? 1.0 : 0.0;
 
-  if (vUv.y < lower && vUv.y > upper && wave(vUv.y) > 0.0) {
+  if (vUv.y < gapsLower && vUv.y > gapsUpper && wave(vUv.y) > 0.0) {
     alpha = 0.0;
   }
 
-  gl_FragColor = vec4(
-      mix(topColor, bottomColor, (vUv.y - lerpStart) / (lerpEnd - lerpStart)),
-      alpha);
+  float lerpValue = (vUv.y - lerpStart) / (lerpEnd - lerpStart);
+  gl_FragColor = vec4(mix(topColor, bottomColor, lerpValue), alpha);
 }

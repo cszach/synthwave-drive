@@ -7,20 +7,30 @@ export default class Sun {
   constructor() {
     this.experience = new Experience();
     this.scene = this.experience.scene;
-    this.colorPalette = this.experience.colorPalette;
     this.terrain = this.experience.world.terrain;
     this.time = this.experience.time;
+    this.colorPalette = this.experience.colorPalette;
     this.debug = this.experience.debug;
 
-    // TODO: Move config to parent
     this.config = {
-      lower: 0.6,
-      upper: 0.4,
+      /** The UV y coordinate where gaps appear. */
+      gapsLower: 0.6,
+      /** The UV y coordinate where gaps disappear. */
+      gapsUpper: 0.4,
+
+      // Parameters for the wave function, see sun.frag for the equation.
+
+      /** The horizontal offset of the wave. */
       offset: 0.3,
+      /** "Compression" factor: more compression means more gaps. */
       compression: 4,
+      /** The number to multiply the time with (to slow down or speed up animation). */
       timeMultiplier: 0.001,
+      /** The sun's radius in UV coordinate units. */
       sunRadius: 0.2,
+      /** The UV y coordinate where the color interpolation starts (at the top). */
       lerpStart: 0.3,
+      /** The UV y coordinate where the color interpolation ends (at the bottom). */
       lerpEnd: 0.5,
     };
 
@@ -40,8 +50,8 @@ export default class Sun {
       fragmentShader: sunFragmentShader,
       transparent: true,
       uniforms: {
-        lower: { value: this.config.lower },
-        upper: { value: this.config.upper },
+        gapsLower: { value: this.config.gapsLower },
+        gapsUpper: { value: this.config.gapsUpper },
         offset: { value: this.config.offset },
         compression: { value: this.config.compression },
         timeMultiplier: { value: this.config.timeMultiplier },
@@ -50,7 +60,7 @@ export default class Sun {
         lerpEnd: { value: this.config.lerpEnd },
         bottomColor: { value: new THREE.Color(this.colorPalette.rose) },
         topColor: { value: new THREE.Color(this.colorPalette.gold) },
-        timeElapsed: { value: 0 },
+        timeElapsed: { value: 0 }, // in milliseconds
       },
     });
   }
@@ -69,11 +79,11 @@ export default class Sun {
     this.debugFolder = this.debug.ui.addFolder("Sun");
 
     this.debugFolder
-      .add(this.material.uniforms.lower, "value", 0.0, 1.0, 0.01)
-      .name("lower");
+      .add(this.material.uniforms.gapsLower, "value", 0.0, 1.0, 0.01)
+      .name("gapsLower");
     this.debugFolder
-      .add(this.material.uniforms.upper, "value", 0.0, 1.0, 0.01)
-      .name("upper");
+      .add(this.material.uniforms.gapsUpper, "value", 0.0, 1.0, 0.01)
+      .name("gapsUpper");
     this.debugFolder
       .add(this.material.uniforms.offset, "value", 0.0, 1.0, 0.01)
       .name("offset");

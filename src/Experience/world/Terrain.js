@@ -10,21 +10,51 @@ export default class Terrain {
     this.debug = this.experience.debug;
 
     this.config = {
+      /** The width of the terrain plane. */
       width: 1000,
+      /** The depth of the terrain plane. */
       depth: 1000,
+      /** The number of vertices along the width. Subdivision = this number - 1. */
       verticesWidth: 128,
+      /** The number of vertices along the depth. */
       verticesDepth: 128,
+      /**
+       * The normalized z value for the 3D Perlin noise.
+       *
+       * Since we use the x and y coordinates to get the height, the z value can
+       * be used to randomize terrains.
+       */
       // zFactor: Math.random(),
       zFactor: 0.914, // TODO: set back to random later
+
+      /* We add noises at 3 different frequencies and amplitudes for interesting
+      results (hopefully). */
+
       frequency1: 14.81,
       amplitude1: 1.0,
       frequency2: 26.98,
       amplitude2: 0.5,
       frequency3: 22.11,
       amplitude3: 0.25,
+
+      /**
+       * The factor by which the Perlin noise output will be multiplied at the
+       * end to make terrains more prominent.
+       */
       multiplier: 139.5,
+      /**
+       * Redistribution factor. Higher values push middle elevations down into
+       * valleys and lower values pull middle elevations up towards the peaks.
+       */
       exp: 2.14,
+      /**
+       * Fudge factor for the redistribution.
+       */
       fudgeFactor: 1.17,
+      /**
+       * Any values from the Perlin noise function that is lower than this value
+       * will be set equal to this value to make a floor.
+       */
       floorElevation: 0.4,
     };
 
@@ -156,6 +186,7 @@ export default class Terrain {
     this.scene.add(this.mesh);
   }
 
+  // TODO: recompile the physics heightfield
   regenerate(changeZ = true) {
     if (changeZ) {
       this.config.zFactor = Math.random();
