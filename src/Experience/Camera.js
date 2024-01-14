@@ -10,7 +10,7 @@ export default class Camera {
     this.canvas = this.experience.canvas;
     this.debug = this.experience.debug;
 
-    this.config = {
+    this.initialConfig = {
       fov: 35,
       near: 0.1,
       far: 20000,
@@ -23,10 +23,10 @@ export default class Camera {
 
   setInstance() {
     this.instance = new THREE.PerspectiveCamera(
-      this.config.fov,
+      this.initialConfig.fov,
       this.sizes.width / this.sizes.height,
-      this.config.near,
-      this.config.far
+      this.initialConfig.near,
+      this.initialConfig.far
     );
     // Position is set in world/Car
 
