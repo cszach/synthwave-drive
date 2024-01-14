@@ -5,14 +5,16 @@ export default class CarControls {
     this.experience = new Experience();
     this.keyboard = this.experience.keyboard;
     this.vehicle = vehicle;
+    this.debug = this.experience.debug;
 
     this.config = {
-      maxSteer: 0.5,
       maxForce: 1000,
-      brakeForce: 1000000,
+      maxSteer: 0.5,
+      brakeForce: 1000,
     };
 
     this.setKeyBindings();
+    if (this.debug.active) this.setDebug();
   }
 
   setKeyBindings() {
@@ -77,5 +79,16 @@ export default class CarControls {
           break;
       }
     });
+  }
+
+  setDebug() {
+    const carDebugFolder = this.debug.ui.folders.filter(
+      (folder) => folder._title == "Car"
+    )[0];
+    this.debugFolder = carDebugFolder.addFolder("CarControls");
+
+    this.debugFolder.add(this.config, "maxSteer", 0, 1, 0.01);
+    this.debugFolder.add(this.config, "maxForce", 100, 1000, 1);
+    this.debugFolder.add(this.config, "brakeForce", 0, 1000, 1);
   }
 }
