@@ -1,5 +1,7 @@
 import * as THREE from "three";
 import Experience from "../Experience";
+import skyVertexShader from "../shaders/sky.vert";
+import skyFragmentShader from "../shaders/sky.frag";
 
 export default class Environment {
   constructor() {
@@ -27,41 +29,20 @@ export default class Environment {
   }
 
   setSky() {
+    // Create a large sphere around the scene and renders on the backside so it
+    // looks like a sky.
+
     this.skyGeometry = new THREE.SphereGeometry(10000, 25, 25);
     this.skyMaterial = new THREE.ShaderMaterial({
+      side: THREE.BackSide,
       uniforms: {
         skyStart: { value: 0.8 },
         skyEnd: { value: 0.2 },
         topColor: { value: new THREE.Color(this.colorPalette.night) },
         bottomColor: { value: new THREE.Color(this.colorPalette.fuchsia) },
       },
-      vertexShader: `
-        varying vec2 vUv;
-
-        void main() {
-          gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
-
-          vUv = uv;
-        }
-      `,
-      fragmentShader: `
-        uniform vec3 topColor;
-        uniform vec3 bottomColor;
-        uniform float skyStart;
-        uniform float skyEnd;
-        varying vec2 vUv;
-
-        void main() {
-          vec3 color = (vUv.y > skyStart)
-            ? topColor
-            : (vUv.y < skyEnd
-              ? bottomColor
-              : mix(bottomColor, topColor, (vUv.y - skyEnd) / (skyStart - skyEnd)));
-
-          gl_FragColor = vec4(color, 1.0);
-        }
-      `,
-      side: THREE.BackSide,
+      vertexShader: skyVertexShader,
+      fragmentShader: skyFragmentShader,
     });
 
     this.sky = new THREE.Mesh(this.skyGeometry, this.skyMaterial);
@@ -74,7 +55,6 @@ export default class Environment {
     this.debugFolder
       .add(this.sunLight, "intensity", 0, 10, 0.001)
       .name("sunLightIntensity");
-
     this.debugFolder
       .add(this.sunLight.position, "x", -5, 5, 0.001)
       .name("sunLightX");
