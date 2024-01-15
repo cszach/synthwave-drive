@@ -5,28 +5,39 @@ import Experience from "../../Experience";
 // A lot of code is adapted from https://github.com/pmndrs/cannon-es/blob/master/examples/raycast_vehicle.html.
 export default class CarPhysics {
   /**
-   *
-   * @param {THREE.Box3} chassisBoundingBox The bounding box of the car, assuming
-   * the car to be aligned on the Z axis.
-   * @param {THREE.Box3} wheelBoundingBox The bounding box of the wheel,
-   * assuming the car (and thus the wheels) to be aligned on the Z axis.
+   * @param {THREE.Vector3} chassisWorldPosition The world position of the car's
+   * chassis.
    * @param {THREE.Object3D[]} wheels The array of the meshes of the wheels.
    * @param {number} scale The scale applied to the car model.
    */
-  constructor(
-    chassisBoundingBox,
-    chassisLocalPosition,
-    wheelBoundingBox,
-    wheels,
-    scale
-  ) {
+  constructor(chassisWorldPosition, wheels, scale) {
     this.experience = new Experience();
     this.scene = this.experience.scene;
     this.time = this.experience.time;
     this.terrain = this.experience.world.terrain;
     this.debug = this.experience.debug;
 
-    // The car is assumed to be aligned on the Z axis in the Three.js world
+    /**
+     * @namespace
+     *
+     * @property {THREE.Vector3} carSize The size of the car, assuming that the
+     * car is aligned on the Z axis (i.e. it is facing positive or negative Z).
+     * @property {number} carSize.x The width of the car.
+     * @property {number} carSize.y The height of the car.
+     * @property {number} carSize.z The depth of the car.
+     * @property {THREE.Vector3} frontWheelSize The size of the front wheel. The
+     * radius of the wheel is the Y (or Z) value divided by 2.
+     * @property {THREE.Vector3} backWheelSize The size of the back wheel. The
+     * radius of the wheel is the Y (or Z) value divided by 2.
+     * @property {THREE.Vector3} frontWheelLocalPosAdjust The vector to add to
+     * the front wheels' chassis connection point after the local position from
+     * the 3D mesh is used. Used to align the front wheels' physics bodies with
+     * the 3D model.
+     * @property {THREE.Vector3} backWheelLocalPosAdjust The vector to add to
+     * the back wheels' chassis connection point after the local position from
+     * the 3D mesh is used. Used to align the back wheels' physics bodies with
+     * the 3D model.
+     */
     this.config = {
       carSize: new THREE.Vector3(1.97, 1, 4.21),
       frontWheelSize: new THREE.Vector3(0.27, 0.6, 0.6),
@@ -35,14 +46,17 @@ export default class CarPhysics {
       backWheelLocalPosAdjust: new THREE.Vector3(0, 0.12, 0.212),
     };
 
-    this.chassisBoundingBox = chassisBoundingBox;
-    this.chassisLocalPosition = chassisLocalPosition;
-    this.wheelBoundingBox = wheelBoundingBox;
+    this.chassisWorldPosition = chassisWorldPosition;
     this.wheels = wheels;
     this.scale = scale;
 
+    /**
+     * @namespace
+     *
+     * See https://pmndrs.github.io/cannon-es/docs/classes/WheelInfo.html.
+     */
     this.wheelOptions = {
-      radius: this.config.frontWheelSize.y / 2,
+      radius: this.config.frontWheelSize.y / 2, // will be set later
       directionLocal: new CANNON.Vec3(0, -1, 0),
       suspensionStiffness: 30,
       suspensionRestLength: 0.3,
@@ -91,9 +105,7 @@ export default class CarPhysics {
       shape: this.chassisShape,
     });
 
-    const chassisBodyPosition = new THREE.Vector3();
-    this.chassisBoundingBox.getCenter(chassisBodyPosition);
-    this.chassisBody.position.copy(chassisBodyPosition);
+    this.chassisBody.position.copy(this.chassisWorldPosition);
     this.chassisBody.quaternion.setFromEuler(0, -Math.PI, 0); // face the positive z direction
   }
 
@@ -190,13 +202,14 @@ export default class CarPhysics {
     this.heightfieldBody = new CANNON.Body({
       mass: 0,
       material: this.groundMaterial,
+      shape: this.heightfieldShape,
     });
-    this.heightfieldBody.addShape(this.heightfieldShape);
     this.heightfieldBody.position.set(
       -(
         (this.terrain.config.verticesWidth - 1) *
         this.heightfieldShape.elementSize
       ) / 2,
+      // bring floor to world Y 0
       -this.terrain.config.floorElevation * this.terrain.config.multiplier,
       -(
         (this.terrain.config.verticesDepth - 1) *
@@ -295,7 +308,7 @@ export default class CarPhysics {
     this.scene.add(this.heightfieldHelper);
   }
 
-  // adapted from https://github.com/pmndrs/cannon-es/blob/master/examples/js/three-conversion-utils.js#L69C7-L103C22
+  // Adapted from https://github.com/pmndrs/cannon-es/blob/master/examples/js/three-conversion-utils.js#L69C7-L103C22.
   heightfieldShapeToGeometry(shape) {
     const geometry = new THREE.BufferGeometry();
 
@@ -364,11 +377,13 @@ export default class CarPhysics {
     this.debugFolder
       .add(this.chassisHelperMesh, "visible")
       .name("chassisHelper");
+
     this.debugFolder.add(debug, "wheelHelpers").onChange((enabled) => {
       this.wheelHelpers.forEach((wheelHelper) => {
         wheelHelper.visible = enabled;
       });
     });
+
     this.debugFolder
       .add(this.heightfieldHelperMesh, "visible")
       .name("heightfieldHelper");
