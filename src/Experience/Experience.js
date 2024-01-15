@@ -28,17 +28,17 @@ export default class Experience {
 
     // Setup
     this.colorPalette = colorPalette;
+    this.sizes = new Sizes();
+    this.time = new Time();
+    this.keyboard = new Keyboard();
+    this.scene = new THREE.Scene();
     this.debug = new Debug(
       config.debugActive,
       config.carHelpersEnabled,
       config.physicsHelpersEnabled
     );
-    this.sizes = new Sizes();
-    this.time = new Time();
-    this.keyboard = new Keyboard();
-    this.scene = new THREE.Scene();
     this.resources = new Resources(sources);
-    this.camera = new Camera();
+    this.camera = this.debug.camera;
     this.renderer = new Renderer();
     this.world = new World();
 
