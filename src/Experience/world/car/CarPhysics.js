@@ -155,7 +155,7 @@ export default class CarPhysics {
         20
       );
       const wheelBody = new CANNON.Body({
-        mass: 0,
+        mass: 15,
         material: this.wheelMaterial,
         type: CANNON.Body.KINEMATIC,
         collisionFilterGroup: 0, // turn off collisions
