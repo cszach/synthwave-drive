@@ -32,11 +32,7 @@ export default class Experience {
     this.time = new Time();
     this.keyboard = new Keyboard();
     this.scene = new THREE.Scene();
-    this.debug = new Debug(
-      config.debugActive,
-      config.carHelpersEnabled,
-      config.physicsHelpersEnabled
-    );
+    this.debug = new Debug(config.debugActive, config.physicsHelpersEnabled);
     this.resources = new Resources(sources);
     this.camera = this.debug.camera;
     this.renderer = new Renderer();

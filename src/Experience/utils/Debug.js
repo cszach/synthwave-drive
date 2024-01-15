@@ -4,9 +4,8 @@ import Camera from "../Camera";
 import { MapControls } from "three/examples/jsm/controls/MapControls";
 
 export default class Debug {
-  constructor(debugActive, carHelpersEnabled, physicsHelpersEnabled) {
+  constructor(debugActive, physicsHelpersEnabled) {
     this.active = debugActive;
-    this.carHelpersEnabled = carHelpersEnabled;
     this.physicsHelpersEnabled = physicsHelpersEnabled;
 
     if (this.active) {

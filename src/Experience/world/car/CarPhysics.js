@@ -41,8 +41,6 @@ export default class CarPhysics {
     this.wheels = wheels;
     this.scale = scale;
 
-    // console.log(this.wheelSize.y / 2); // 0.3221972366590552
-
     this.wheelOptions = {
       radius: this.config.frontWheelSize.y / 2,
       directionLocal: new CANNON.Vec3(0, -1, 0),
@@ -347,7 +345,7 @@ export default class CarPhysics {
     const carDebugFolder = this.debug.ui.folders.filter(
       (folder) => folder._title == "Car"
     )[0];
-    this.debugFolder = carDebugFolder.addFolder("CarPhysics");
+    this.debugFolder = carDebugFolder.addFolder("Car physics");
 
     // Set visibility based on debug config
 

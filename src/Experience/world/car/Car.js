@@ -21,16 +21,22 @@ export default class Car {
       // taking the length of the model when imported and the length from
       // https://www.deloreandirectory.com/specs/. Had to convert from inches to
       // meters also, oops.
+      /** The scale scalar to apply to the car's model. */
       scale: 0.422958305,
+      /**
+       * The vector to add to the car model's position after copying the position
+       * from the physics world's chassis body.
+       *
+       * After copying the physics body's position, the car model is misaligned
+       * (see the chassis body helper), so adding this vector adjusts it. Find
+       * the right values using the debug UI.
+       */
       carPosAdjust: new THREE.Vector3(0, -0.098, 0.212),
     };
 
     this.setModel();
     this.setCamera();
-    if (this.debug.active) {
-      this.setHelpers();
-      this.setDebug();
-    }
+    if (this.debug.active) this.setDebug();
 
     // Physics
     this.physics = new CarPhysics(
@@ -45,7 +51,6 @@ export default class Car {
 
   setModel() {
     this.model = this.resource.scene;
-    console.log(this.model);
     this.model.scale.setScalar(this.config.scale);
     this.model.position.set(0, 2, 0);
 
@@ -67,71 +72,25 @@ export default class Car {
     this.camera = new Camera();
   }
 
-  setHelpers() {
-    this.boxHelper = new THREE.BoxHelper(this.model);
-    this.scene.add(this.boxHelper);
-
-    this.axesHelper = new THREE.AxesHelper();
-    this.scene.add(this.axesHelper);
-
-    this.wheelHelpers = this.wheels.map((wheel) => {
-      const helper = new THREE.BoxHelper(wheel);
-      this.scene.add(helper);
-
-      return helper;
-    });
-
-    this.camera.setHelper(this.debug.carHelpersEnabled);
-  }
-
   setDebug() {
     this.debugFolder = this.debug.ui.addFolder("Car");
 
-    // Set visibility based on debug config
-
-    this.boxHelper.visible = this.debug.carHelpersEnabled;
-    this.axesHelper.visible = this.debug.carHelpersEnabled;
-    this.wheelHelpers.forEach((wheelHelper) => {
-      wheelHelper.visible = this.debug.carHelpersEnabled;
-    });
-
-    // Add to debug folder
-
-    const debug = {
-      wheelHelpers: this.debug.carHelpersEnabled,
-    };
-
-    this.debugFolder.add(this.config.carPosAdjust, "x", -1, 1, 0.001);
-    this.debugFolder.add(this.config.carPosAdjust, "y", -1, 1, 0.001);
-    this.debugFolder.add(this.config.carPosAdjust, "z", -1, 1, 0.001);
-
-    this.debugFolder.add(this.boxHelper, "visible").name("boxHelper");
-    this.debugFolder.add(this.axesHelper, "visible").name("axesHelper");
-    this.debugFolder.add(debug, "wheelHelpers").onChange((enabled) => {
-      this.wheelHelpers.forEach((wheelHelper) => {
-        wheelHelper.visible = enabled;
-      });
-    });
+    this.debugFolder
+      .add(this.config.carPosAdjust, "x", -1, 1, 0.001)
+      .name("carPosAdjustX");
+    this.debugFolder
+      .add(this.config.carPosAdjust, "y", -1, 1, 0.001)
+      .name("carPosAdjustY");
+    this.debugFolder
+      .add(this.config.carPosAdjust, "z", -1, 1, 0.001)
+      .name("carPosAdjustZ");
 
     // Camera debug
     this.camera.setDebug("Car camera", this.debugFolder);
   }
 
   update() {
-    // Update helpers
-    if (this.debug.active) {
-      this.boxHelper.update();
-
-      this.axesHelper.position.copy(this.model.position);
-      this.axesHelper.position.y += 1;
-
-      this.wheelHelpers.forEach((wheelHelper) => {
-        wheelHelper.update();
-      });
-    }
-
     // Update physics
-
     this.physics.update();
 
     this.model.position
@@ -143,10 +102,23 @@ export default class Car {
       );
     this.model.quaternion.copy(this.physics.chassisBody.quaternion);
 
-    // TODO: fix rotation
-    // this.wheels.forEach((wheel, index) => {
-    //   wheel.quaternion.copy(this.physics.wheelBodies[index].quaternion);
-    // });
+    this.wheels.forEach((wheel, i) => {
+      // Since physics wheel bodies' quaternions are world transforms, and the
+      // model's wheels' quaternions are local, use a "worldToLocal" method but
+      // for quaternions.
+      //
+      // Code adapted from https://github.com/mrdoob/three.js/issues/13704#issuecomment-1365494785.
+
+      const worldQuaternion = new THREE.Quaternion().copy(
+        this.physics.wheelBodies[i].quaternion
+      );
+
+      wheel.quaternion.copy(
+        worldQuaternion.premultiply(
+          this.model.getWorldQuaternion(new THREE.Quaternion()).invert()
+        )
+      );
+    });
 
     // Update camera
 

@@ -85,7 +85,7 @@ export default class CarControls {
     const carDebugFolder = this.debug.ui.folders.filter(
       (folder) => folder._title == "Car"
     )[0];
-    this.debugFolder = carDebugFolder.addFolder("CarControls");
+    this.debugFolder = carDebugFolder.addFolder("Car controls");
 
     this.debugFolder.add(this.config, "maxSteer", 0, 1, 0.01);
     this.debugFolder.add(this.config, "maxForce", 100, 1000, 1);
