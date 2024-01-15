@@ -2,6 +2,7 @@ import * as THREE from "three";
 import Experience from "../../Experience";
 import CarPhysics from "./CarPhysics";
 import CarControls from "./CarControls";
+import Camera from "../../Camera";
 
 export default class Car {
   constructor() {
@@ -22,8 +23,11 @@ export default class Car {
     this.scale = 0.422958305;
 
     this.setModel();
-    this.setHelpers();
-    if (this.debug.active) this.setDebug();
+    this.setCamera();
+    if (this.debug.active) {
+      this.setHelpers();
+      this.setDebug();
+    }
 
     // Physics
     this.physics = new CarPhysics(
@@ -52,6 +56,10 @@ export default class Car {
     ];
   }
 
+  setCamera() {
+    this.camera = new Camera();
+  }
+
   setHelpers() {
     this.boxHelper = new THREE.BoxHelper(this.model);
     this.scene.add(this.boxHelper);
@@ -65,6 +73,8 @@ export default class Car {
 
       return helper;
     });
+
+    this.camera.setHelper(this.debug.carHelpersEnabled);
   }
 
   setDebug() {
@@ -74,7 +84,6 @@ export default class Car {
 
     this.boxHelper.visible = this.debug.carHelpersEnabled;
     this.axesHelper.visible = this.debug.carHelpersEnabled;
-
     this.wheelHelpers.forEach((wheelHelper) => {
       wheelHelper.visible = this.debug.carHelpersEnabled;
     });
@@ -92,19 +101,23 @@ export default class Car {
         wheelHelper.visible = enabled;
       });
     });
+
+    // Camera debug
+    this.camera.setDebug("Car camera", this.debugFolder);
   }
 
   update() {
     // Update helpers
+    if (this.debug.active) {
+      this.boxHelper.update();
 
-    this.boxHelper.update();
+      this.axesHelper.position.copy(this.model.position);
+      this.axesHelper.position.y += 1;
 
-    this.axesHelper.position.copy(this.model.position);
-    this.axesHelper.position.y += 1;
-
-    this.wheelHelpers.forEach((wheelHelper) => {
-      wheelHelper.update();
-    });
+      this.wheelHelpers.forEach((wheelHelper) => {
+        wheelHelper.update();
+      });
+    }
 
     // Update physics
 
@@ -118,17 +131,12 @@ export default class Car {
     //   wheel.quaternion.copy(this.physics.wheelBodies[index].quaternion);
     // });
 
-    // this.updateCamera();
+    // Update camera
+
+    this.camera.update();
+    this.camera.instance.position.copy(
+      this.model.localToWorld(new THREE.Vector3(0, 3, 17))
+    );
+    this.camera.instance.quaternion.copy(this.model.quaternion);
   }
-
-  // updateCamera() {
-  //   const camera = this.experience.camera;
-
-  //   // Position camera behind car
-  //   // TODO: multiple-cameras setup
-  //   camera.instance.position.copy(
-  //     this.model.localToWorld(new THREE.Vector3(0, 3, 17))
-  //   );
-  //   camera.instance.quaternion.copy(this.model.quaternion);
-  // }
 }

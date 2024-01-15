@@ -9,12 +9,17 @@ export default class World {
     this.experience = new Experience();
     this.scene = this.experience.scene;
     this.resources = this.experience.resources;
+    this.debug = this.experience.debug;
 
     this.resources.on("ready", () => {
       this.terrain = new Terrain();
       this.sun = new Sun();
       this.car = new Car();
       this.environment = new Environment();
+
+      if (!this.debug.active) {
+        this.experience.camera = this.car.camera;
+      }
     });
   }
 

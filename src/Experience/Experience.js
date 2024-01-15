@@ -50,6 +50,27 @@ export default class Experience {
 
         this.debug.ui.show();
       }
+
+      // Start animation once resources are ready
+      window.requestAnimationFrame(() => {
+        this.time.tick();
+      });
+
+      this.keyboard.on("keydown", (key) => {
+        switch (key) {
+          case "1":
+            this.camera = this.world.car.camera;
+            break;
+
+          case "0":
+            if (this.debug.active) {
+              this.camera = this.debug.camera;
+            } else {
+              console.error("Debug is not active");
+            }
+            break;
+        }
+      });
     });
 
     // Sizes resize event
