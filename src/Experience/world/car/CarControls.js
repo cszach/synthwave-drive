@@ -7,18 +7,20 @@ export default class CarControls {
     this.vehicle = vehicle;
     this.debug = this.experience.debug;
 
-    /**
-     * @namespace
-     *
-     * @property {number} maxForce The force applied on the propelling wheels
-     * when moving backwards or forwards.
-     * @property {number} maxSteer The steering angle applied on the steering
-     * wheels when turning left or right.
-     * @property {number} brakeForce The force set on the brake when braking.
-     */
     this.config = {
+      /**
+       * The force applied on the propelling wheels when moving backwards or
+       * forwards.
+       */
       maxForce: 100,
+      /**
+       * The steering angle applied on the steering wheels when turning left or
+       * right.
+       */
       maxSteer: Math.PI / 8,
+      /**
+       * The force set on the brake when braking.
+       */
       brakeForce: 1000,
     };
 

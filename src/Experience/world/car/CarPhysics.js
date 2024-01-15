@@ -17,32 +17,37 @@ export default class CarPhysics {
     this.terrain = this.experience.world.terrain;
     this.debug = this.experience.debug;
 
-    /**
-     * @namespace
-     *
-     * @property {THREE.Vector3} carSize The size of the car, assuming that the
-     * car is aligned on the Z axis (i.e. it is facing positive or negative Z).
-     * @property {number} carSize.x The width of the car.
-     * @property {number} carSize.y The height of the car.
-     * @property {number} carSize.z The depth of the car.
-     * @property {THREE.Vector3} frontWheelSize The size of the front wheel. The
-     * radius of the wheel is the Y (or Z) value divided by 2.
-     * @property {THREE.Vector3} backWheelSize The size of the back wheel. The
-     * radius of the wheel is the Y (or Z) value divided by 2.
-     * @property {THREE.Vector3} frontWheelLocalPosAdjust The vector to add to
-     * the front wheels' chassis connection point after the local position from
-     * the 3D mesh is used. Used to align the front wheels' physics bodies with
-     * the 3D model.
-     * @property {THREE.Vector3} backWheelLocalPosAdjust The vector to add to
-     * the back wheels' chassis connection point after the local position from
-     * the 3D mesh is used. Used to align the back wheels' physics bodies with
-     * the 3D model.
-     */
     this.config = {
+      /**
+       * The size of the car, assuming that the car is aligned on the Z axis
+       * (i.e. it is facing positive or negative Z).
+       *
+       * x - The width of the car.
+       * y - The height of the car.
+       * z - The depth of the car.
+       */
       carSize: new THREE.Vector3(1.97, 1, 4.21),
+      /**
+       * The size of the front wheel. The radius of the wheel is the Y (or Z)
+       * value divided by 2.
+       */
       frontWheelSize: new THREE.Vector3(0.27, 0.6, 0.6),
+      /**
+       * The size of the back wheel. The radius of the wheel is the Y (or Z)
+       * value divided by 2.
+       */
       backWheelSize: new THREE.Vector3(0.27, 0.65, 0.65),
+      /**
+       * The vector to add to the front wheels' chassis connection point after
+       * the local position from the 3D mesh is used. Used to align the front
+       * wheels' physics bodies with the 3D model.
+       */
       frontWheelLocalPosAdjust: new THREE.Vector3(0, 0.127, 0.212),
+      /**
+       * The vector to add to the back wheels' chassis connection point after
+       * the local position from the 3D mesh is used. Used to align the back
+       * wheels' physics bodies with the 3D model.
+       */
       backWheelLocalPosAdjust: new THREE.Vector3(0, 0.12, 0.212),
     };
 
@@ -51,8 +56,6 @@ export default class CarPhysics {
     this.scale = scale;
 
     /**
-     * @namespace
-     *
      * See https://pmndrs.github.io/cannon-es/docs/classes/WheelInfo.html.
      */
     this.wheelOptions = {

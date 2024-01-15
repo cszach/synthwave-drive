@@ -14,23 +14,23 @@ export default class Car {
     this.terrain = this.experience.world.terrain;
     this.resource = this.resources.items.carModel;
 
-    /**
-     * @namespace
-     *
-     * @property {number} scale The scale scalar to apply to the car's model.
-     * 1 unit in the Three.js world is 1 meter. Scale factor was calculated by
-     * taking the length of the model when imported and the length from
-     * https://www.deloreandirectory.com/specs/. Had to convert from inches to
-     * meters also, oops.
-     * @property {THREE.Vector3} carPosAdjust The vector to add to the car
-     * model's position after copying the position from the physics world's
-     * chassis body. After copying the physics body's position, the car model is
-     * misaligned (see the chassis body helper), so adding this vector adjusts
-     * it. Find the right values using the debug UI.
-     */
     this.config = {
+      /**
+       * The scale scalar to apply to the car's model.
+       *
+       * 1 unit in the Three.js world is 1 meter. Scale factor was calculated by
+       * taking the length of the model when imported and the length from
+       * https://www.deloreandirectory.com/specs/. Had to convert from inches to
+       * meters also, oops.
+       */
       scale: 0.422958305,
       /**
+       * The vector to add to the car model's position after copying the
+       * position from the physics world's chassis body.
+       *
+       * After copying the physics body's position, the car model is misaligned
+       * (see the chassis body helper), so adding this vector adjusts it. Find
+       * the right values using the debug UI.
        */
       carPosAdjust: new THREE.Vector3(0, -0.098, 0.212),
     };
