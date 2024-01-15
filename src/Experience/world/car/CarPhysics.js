@@ -6,30 +6,45 @@ import Experience from "../../Experience";
 export default class CarPhysics {
   /**
    *
-   * @param {THREE.Box3} carBoundingBox The bounding box of the car, assuming
+   * @param {THREE.Box3} chassisBoundingBox The bounding box of the car, assuming
    * the car to be aligned on the Z axis.
    * @param {THREE.Box3} wheelBoundingBox The bounding box of the wheel,
    * assuming the car (and thus the wheels) to be aligned on the Z axis.
    * @param {THREE.Object3D[]} wheels The array of the meshes of the wheels.
    * @param {number} scale The scale applied to the car model.
    */
-  constructor(carBoundingBox, wheelBoundingBox, wheels, scale) {
+  constructor(
+    chassisBoundingBox,
+    chassisLocalPosition,
+    wheelBoundingBox,
+    wheels,
+    scale
+  ) {
     this.experience = new Experience();
     this.scene = this.experience.scene;
     this.time = this.experience.time;
     this.terrain = this.experience.world.terrain;
     this.debug = this.experience.debug;
 
-    this.carSize = carBoundingBox.getSize(new THREE.Vector3());
-    this.wheelSize = wheelBoundingBox.getSize(new THREE.Vector3());
+    // The car is assumed to be aligned on the Z axis in the Three.js world
+    this.config = {
+      carSize: new THREE.Vector3(1.97, 1, 4.21),
+      frontWheelSize: new THREE.Vector3(0.27, 0.6, 0.6),
+      backWheelSize: new THREE.Vector3(0.27, 0.65, 0.65),
+      frontWheelLocalPosAdjust: new THREE.Vector3(0, 0.127, 0.212),
+      backWheelLocalPosAdjust: new THREE.Vector3(0, 0.12, 0.212),
+    };
 
-    this.carBoundingBox = carBoundingBox;
+    this.chassisBoundingBox = chassisBoundingBox;
+    this.chassisLocalPosition = chassisLocalPosition;
     this.wheelBoundingBox = wheelBoundingBox;
     this.wheels = wheels;
     this.scale = scale;
 
+    // console.log(this.wheelSize.y / 2); // 0.3221972366590552
+
     this.wheelOptions = {
-      radius: this.wheelSize.y / 2,
+      radius: this.config.frontWheelSize.y / 2,
       directionLocal: new CANNON.Vec3(0, -1, 0),
       suspensionStiffness: 30,
       suspensionRestLength: 0.3,
@@ -67,9 +82,9 @@ export default class CarPhysics {
   setChassis() {
     this.chassisShape = new CANNON.Box(
       new CANNON.Vec3( // half extents
-        this.carSize.x / 2,
-        this.carSize.y / 2,
-        this.carSize.z / 2
+        this.config.carSize.x / 2,
+        this.config.carSize.y / 2,
+        this.config.carSize.z / 2
       )
     );
 
@@ -79,7 +94,7 @@ export default class CarPhysics {
     });
 
     const chassisBodyPosition = new THREE.Vector3();
-    this.carBoundingBox.getCenter(chassisBodyPosition);
+    this.chassisBoundingBox.getCenter(chassisBodyPosition);
     this.chassisBody.position.copy(chassisBodyPosition);
     this.chassisBody.quaternion.setFromEuler(0, -Math.PI, 0); // face the positive z direction
   }
@@ -92,13 +107,22 @@ export default class CarPhysics {
     });
 
     this.wheels.forEach((wheel) => {
+      const isFrontWheel = wheel.name.includes("f");
+
+      this.wheelOptions.radius = isFrontWheel
+        ? this.config.frontWheelSize.y / 2
+        : this.config.backWheelSize.y / 2;
       this.wheelOptions.chassisConnectionPointLocal.copy(
         wheel.position
           .clone()
           .multiplyScalar(this.scale)
-          .add(new THREE.Vector3(0, 0.25, 0)) // TODO: add on gui
+          .add(
+            isFrontWheel
+              ? this.config.frontWheelLocalPosAdjust
+              : this.config.backWheelLocalPosAdjust
+          )
       );
-      this.wheelOptions.isFrontWheel = wheel.name.includes("f"); // redundant
+      this.wheelOptions.isFrontWheel = isFrontWheel; // redundant
 
       this.vehicle.addWheel(this.wheelOptions);
     });
@@ -114,7 +138,7 @@ export default class CarPhysics {
       const cylinderShape = new CANNON.Cylinder(
         wheel.radius,
         wheel.radius,
-        this.wheelSize.x,
+        this.config.frontWheelSize.x, // both front and back wheels have same x
         20
       );
       const wheelBody = new CANNON.Body({
@@ -214,13 +238,16 @@ export default class CarPhysics {
       this.chassisShape.halfExtents.z * 2
     );
 
-    this.chassisHelper = new THREE.Mesh(
+    this.chassisHelperMesh = new THREE.Mesh(
       chassisHelperGeometry,
       this.helperMaterial
     );
-    this.chassisHelper.position.copy(this.chassisBody.position);
-    this.chassisHelper.quaternion.copy(this.chassisBody.quaternion);
+    this.chassisHelperMesh.position.copy(this.chassisBody.shapeOffsets[0]);
+    this.chassisHelperMesh.quaternion.copy(
+      this.chassisBody.shapeOrientations[0]
+    );
 
+    this.chassisHelper = new THREE.Group().add(this.chassisHelperMesh);
     this.scene.add(this.chassisHelper);
 
     // Wheel helpers
@@ -233,13 +260,14 @@ export default class CarPhysics {
         wheelBody.shapes[0].numSegments
       );
 
-      const wheelHelper = new THREE.Mesh(
+      const wheelHelperMesh = new THREE.Mesh(
         wheelHelperGeometry,
         this.helperMaterial
       );
-      wheelHelper.position.copy(wheelBody.position);
-      wheelHelper.quaternion.copy(wheelBody.quaternion);
+      wheelHelperMesh.position.copy(wheelBody.shapeOffsets[0]);
+      wheelHelperMesh.quaternion.copy(wheelBody.shapeOrientations[0]);
 
+      const wheelHelper = new THREE.Group().add(wheelHelperMesh);
       this.scene.add(wheelHelper);
 
       return wheelHelper;
@@ -251,10 +279,18 @@ export default class CarPhysics {
       this.heightfieldShape
     );
 
-    this.heightfieldHelper = new THREE.Mesh(
+    this.heightfieldHelperMesh = new THREE.Mesh(
       heightfieldGeometry,
       this.helperMaterial
     );
+    this.heightfieldHelperMesh.position.copy(
+      this.heightfieldBody.shapeOffsets[0]
+    );
+    this.heightfieldHelperMesh.quaternion.copy(
+      this.heightfieldBody.shapeOrientations[0]
+    );
+
+    this.heightfieldHelper = new THREE.Group().add(this.heightfieldHelperMesh);
     this.heightfieldHelper.position.copy(this.heightfieldBody.position);
     this.heightfieldHelper.quaternion.copy(this.heightfieldBody.quaternion);
 
@@ -315,11 +351,11 @@ export default class CarPhysics {
 
     // Set visibility based on debug config
 
-    this.chassisHelper.visible = this.debug.physicsHelpersEnabled;
+    this.chassisHelperMesh.visible = this.debug.physicsHelpersEnabled;
     this.wheelHelpers.forEach((wheelHelper) => {
       wheelHelper.visible = this.debug.physicsHelpersEnabled;
     });
-    this.heightfieldHelper.visible = this.debug.physicsHelpersEnabled;
+    this.heightfieldHelperMesh.visible = this.debug.physicsHelpersEnabled;
 
     // Add to debug folder
 
@@ -327,14 +363,16 @@ export default class CarPhysics {
       wheelHelpers: this.debug.physicsHelpersEnabled,
     };
 
-    this.debugFolder.add(this.chassisHelper, "visible").name("chassisHelper");
+    this.debugFolder
+      .add(this.chassisHelperMesh, "visible")
+      .name("chassisHelper");
     this.debugFolder.add(debug, "wheelHelpers").onChange((enabled) => {
       this.wheelHelpers.forEach((wheelHelper) => {
         wheelHelper.visible = enabled;
       });
     });
     this.debugFolder
-      .add(this.heightfieldHelper, "visible")
+      .add(this.heightfieldHelperMesh, "visible")
       .name("heightfieldHelper");
   }
 
@@ -342,8 +380,8 @@ export default class CarPhysics {
     this.physicsWorld.step(1 / 60, this.time.delta, 3);
 
     if (this.debug.active) {
-      this.chassisHelper.position.copy(this.chassisBody.position);
-      this.chassisHelper.quaternion.copy(this.chassisBody.quaternion);
+      this.chassisHelperMesh.position.copy(this.chassisBody.position);
+      this.chassisHelperMesh.quaternion.copy(this.chassisBody.quaternion);
 
       this.wheelHelpers.forEach((wheelHelper, i) => {
         wheelHelper.position.copy(this.wheelBodies[i].position);

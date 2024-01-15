@@ -8,8 +8,8 @@ export default class CarControls {
     this.debug = this.experience.debug;
 
     this.config = {
-      maxForce: 1000,
-      maxSteer: 0.5,
+      maxForce: 100,
+      maxSteer: Math.PI / 8,
       brakeForce: 1000,
     };
 

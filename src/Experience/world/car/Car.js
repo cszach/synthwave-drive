@@ -16,11 +16,14 @@ export default class Car {
     // Setup
     this.resource = this.resources.items.carModel;
 
-    // 1 unit in the Three.js world is 1 meter. Scale factor was calculated by
-    // taking the length of the model when imported and the length from
-    // https://www.deloreandirectory.com/specs/. Had to convert from inches to
-    // meters also, oops.
-    this.scale = 0.422958305;
+    this.config = {
+      // 1 unit in the Three.js world is 1 meter. Scale factor was calculated by
+      // taking the length of the model when imported and the length from
+      // https://www.deloreandirectory.com/specs/. Had to convert from inches to
+      // meters also, oops.
+      scale: 0.422958305,
+      carPosAdjust: new THREE.Vector3(0, -0.098, 0.212),
+    };
 
     this.setModel();
     this.setCamera();
@@ -31,17 +34,19 @@ export default class Car {
 
     // Physics
     this.physics = new CarPhysics(
-      new THREE.Box3().setFromObject(this.model),
+      new THREE.Box3().setFromObject(this.chassis),
+      this.chassis.position,
       new THREE.Box3().setFromObject(this.wheels[0]),
       this.wheels,
-      this.scale
+      this.config.scale
     );
     this.controls = new CarControls(this.physics.vehicle);
   }
 
   setModel() {
     this.model = this.resource.scene;
-    this.model.scale.setScalar(this.scale);
+    console.log(this.model);
+    this.model.scale.setScalar(this.config.scale);
     this.model.position.set(0, 2, 0);
 
     this.scene.add(this.model);
@@ -54,6 +59,8 @@ export default class Car {
       this.model.getObjectByName("w_f_l"),
       this.model.getObjectByName("w_f_r"),
     ];
+
+    this.chassis = this.model.getObjectByName("car_body");
   }
 
   setCamera() {
@@ -94,6 +101,10 @@ export default class Car {
       wheelHelpers: this.debug.carHelpersEnabled,
     };
 
+    this.debugFolder.add(this.config.carPosAdjust, "x", -1, 1, 0.001);
+    this.debugFolder.add(this.config.carPosAdjust, "y", -1, 1, 0.001);
+    this.debugFolder.add(this.config.carPosAdjust, "z", -1, 1, 0.001);
+
     this.debugFolder.add(this.boxHelper, "visible").name("boxHelper");
     this.debugFolder.add(this.axesHelper, "visible").name("axesHelper");
     this.debugFolder.add(debug, "wheelHelpers").onChange((enabled) => {
@@ -123,7 +134,13 @@ export default class Car {
 
     this.physics.update();
 
-    this.model.position.copy(this.physics.chassisBody.position);
+    this.model.position
+      .copy(this.physics.chassisBody.position.clone())
+      .add(
+        this.config.carPosAdjust
+          .clone()
+          .applyQuaternion(this.physics.chassisBody.quaternion)
+      );
     this.model.quaternion.copy(this.physics.chassisBody.quaternion);
 
     // TODO: fix rotation
