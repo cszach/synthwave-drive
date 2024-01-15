@@ -51,8 +51,10 @@ export default class CarPhysics {
     this.setWheelBodies();
     this.setGround();
     this.setContactMaterial();
-    this.setHelpers();
-    if (this.debug.active) this.setDebug();
+    if (this.debug.active) {
+      this.setHelpers();
+      this.setDebug();
+    }
   }
 
   setWorld() {
@@ -337,14 +339,16 @@ export default class CarPhysics {
   }
 
   update() {
-    this.chassisHelper.position.copy(this.chassisBody.position);
-    this.chassisHelper.quaternion.copy(this.chassisBody.quaternion);
-
-    this.wheelHelpers.forEach((wheelHelper, i) => {
-      wheelHelper.position.copy(this.wheelBodies[i].position);
-      wheelHelper.quaternion.copy(this.wheelBodies[i].quaternion);
-    });
-
     this.physicsWorld.step(1 / 60, this.time.delta, 3);
+
+    if (this.debug.active) {
+      this.chassisHelper.position.copy(this.chassisBody.position);
+      this.chassisHelper.quaternion.copy(this.chassisBody.quaternion);
+
+      this.wheelHelpers.forEach((wheelHelper, i) => {
+        wheelHelper.position.copy(this.wheelBodies[i].position);
+        wheelHelper.quaternion.copy(this.wheelBodies[i].quaternion);
+      });
+    }
   }
 }
