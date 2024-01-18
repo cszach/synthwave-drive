@@ -174,7 +174,8 @@ export default class Terrain {
     this.terrainMaterial = new THREE.MeshStandardMaterial({
       color: this.colorPalette.night,
       metalness: 0,
-      roughness: 0,
+      roughness: 0.66,
+      flatShading: true,
     });
 
     this.wireframeMaterial = new THREE.LineBasicMaterial({
@@ -184,7 +185,8 @@ export default class Terrain {
     this.floorMaterial = new THREE.MeshStandardMaterial({
       color: this.colorPalette.night,
       metalness: 0,
-      roughness: 0,
+      roughness: 0.66,
+      flatShading: true,
       envMap: this.cubeCamera.instance.renderTarget.texture,
       envMapIntensity: 1,
     });
@@ -267,7 +269,12 @@ export default class Terrain {
 
     terrainMaterialFolder.add(this.terrainMaterial, "metalness", 0, 1, 0.01);
     terrainMaterialFolder.add(this.terrainMaterial, "roughness", 0, 1, 0.01);
-    terrainMaterialFolder.addColor(this.wireframeMaterial, "color");
+    terrainMaterialFolder
+      .addColor(this.terrainMaterial, "color")
+      .name("terrainColor");
+    terrainMaterialFolder
+      .addColor(this.wireframeMaterial, "color")
+      .name("wireframeColor");
 
     const floorMaterialFolder = this.debugFolder.addFolder("Floor material");
 
