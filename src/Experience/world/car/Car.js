@@ -7,6 +7,7 @@ import Camera from "../../Camera";
 export default class Car {
   constructor() {
     this.experience = new Experience();
+    this.cubeCamera = this.experience.cubeCamera;
     this.scene = this.experience.scene;
     this.resources = this.experience.resources;
     this.time = this.experience.time;
@@ -44,9 +45,7 @@ export default class Car {
 
     // Physics
     this.physics = new CarPhysics(
-      this.model.localToWorld(
-        this.model.getObjectByName("car_body").position.clone()
-      ),
+      this.model.localToWorld(this.carBody.position.clone()),
       this.wheels,
       this.config.scale
     );
@@ -57,8 +56,19 @@ export default class Car {
     this.model = this.resource.scene;
     this.model.scale.setScalar(this.config.scale);
     this.model.position.set(0, 2, 0);
-
     this.scene.add(this.model);
+
+    console.log(this.model);
+
+    // Reflective materials
+
+    this.carBody = this.model.getObjectByName("car_body");
+
+    this.model.traverse((child) => {
+      if (child.isMesh) {
+        child.material.envMap = this.cubeCamera.instance.renderTarget.texture;
+      }
+    });
 
     // Must add the back wheels first. The first 2 wheels are for propulsion.
     // The last 2 are for steering.
