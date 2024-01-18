@@ -5,6 +5,7 @@ import { ImprovedNoise } from "three/examples/jsm/math/ImprovedNoise";
 export default class Terrain {
   constructor() {
     this.experience = new Experience();
+    this.cubeCamera = this.experience.cubeCamera;
     this.scene = this.experience.scene;
     this.colorPalette = this.experience.colorPalette;
     this.debug = this.experience.debug;
@@ -156,6 +157,17 @@ export default class Terrain {
     }
 
     this.wireframeGeometry = new THREE.WireframeGeometry(this.terrainGeometry);
+
+    if (this.floorGeometry) {
+      this.floorGeometry.dispose();
+    }
+
+    this.floorGeometry = new THREE.PlaneGeometry(
+      this.config.width,
+      this.config.depth,
+      this.config.verticesWidth - 1,
+      this.config.verticesDepth - 1
+    );
   }
 
   setMaterial() {
@@ -168,6 +180,14 @@ export default class Terrain {
     this.wireframeMaterial = new THREE.LineBasicMaterial({
       color: this.colorPalette.fuchsia,
     });
+
+    this.floorMaterial = new THREE.MeshStandardMaterial({
+      color: this.colorPalette.night,
+      metalness: 0,
+      roughness: 0,
+      envMap: this.cubeCamera.instance.renderTarget.texture,
+      envMapIntensity: 1,
+    });
   }
 
   setMesh() {
@@ -177,10 +197,25 @@ export default class Terrain {
 
     this.mesh = new THREE.Group();
 
-    this.mesh.add(new THREE.Mesh(this.terrainGeometry, this.terrainMaterial));
-    this.mesh.add(
-      new THREE.LineSegments(this.wireframeGeometry, this.wireframeMaterial)
+    const terrainMesh = new THREE.Mesh(
+      this.terrainGeometry,
+      this.terrainMaterial
     );
+
+    const wireframeMesh = new THREE.LineSegments(
+      this.wireframeGeometry,
+      this.wireframeMaterial
+    );
+
+    const floorMesh = new THREE.Mesh(this.floorGeometry, this.floorMaterial);
+    floorMesh.position.z =
+      this.config.floorElevation * this.config.multiplier + 0.05;
+
+    wireframeMesh.layers.enable(this.cubeCamera.layerNumber);
+
+    this.mesh.add(terrainMesh);
+    this.mesh.add(wireframeMesh);
+    this.mesh.add(floorMesh);
     // Make sure the floor's world y position is 0.
     this.mesh.position.y = -this.config.floorElevation * this.config.multiplier;
     this.mesh.rotation.x = -Math.PI / 2;
@@ -233,5 +268,11 @@ export default class Terrain {
     terrainMaterialFolder.add(this.terrainMaterial, "metalness", 0, 1, 0.01);
     terrainMaterialFolder.add(this.terrainMaterial, "roughness", 0, 1, 0.01);
     terrainMaterialFolder.addColor(this.wireframeMaterial, "color");
+
+    const floorMaterialFolder = this.debugFolder.addFolder("Floor material");
+
+    floorMaterialFolder.add(this.floorMaterial, "metalness", 0, 1, 0.01);
+    floorMaterialFolder.add(this.floorMaterial, "roughness", 0, 1, 0.01);
+    floorMaterialFolder.add(this.floorMaterial, "envMapIntensity", 0, 10, 0.01);
   }
 }
