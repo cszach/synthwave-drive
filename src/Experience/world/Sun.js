@@ -38,9 +38,16 @@ export default class Sun {
       lerpEnd: 0.5,
     };
 
+    this.lightConfig = {
+      startColor: new THREE.Color(this.colorPalette.rose),
+      endColor: new THREE.Color(this.colorPalette.gold),
+      lerpValue: 0.5,
+    };
+
     this.setGeometry();
     this.setMaterial();
     this.setMesh();
+    this.setLight();
     if (this.debug.active) this.setDebug();
   }
 
@@ -79,7 +86,32 @@ export default class Sun {
     this.scene.add(this.mesh);
   }
 
+  setLight() {
+    this.light = new THREE.DirectionalLight(
+      new THREE.Color()
+        .lerpColors(
+          this.lightConfig.startColor,
+          this.lightConfig.endColor,
+          this.lightConfig.lerpValue
+        )
+        .getHex(),
+      3
+    );
+    this.light.position.copy(this.mesh.position);
+
+    this.scene.add(this.light);
+  }
+
+  setHelpers() {
+    this.lightHelper = new THREE.DirectionalLightHelper(this.light);
+    this.lightHelper.visible = false;
+
+    this.scene.add(this.lightHelper);
+  }
+
   setDebug() {
+    this.setHelpers();
+
     this.debugFolder = this.debug.ui.addFolder("Sun");
 
     this.debugFolder
@@ -115,9 +147,29 @@ export default class Sun {
     this.debugFolder
       .add(this.material.uniforms.lerpEnd, "value", 0.0, 1.0, 0.01)
       .name("lerpEnd");
+
+    const sunLightFolder = this.debugFolder.addFolder("Light");
+
+    const lerpColor = () => {
+      this.light.color = new THREE.Color().lerpColors(
+        this.lightConfig.startColor,
+        this.lightConfig.endColor,
+        this.lightConfig.lerpValue
+      );
+    };
+
+    sunLightFolder.add(this.light, "intensity", 0, 10, 0.01);
+    sunLightFolder.addColor(this.light, "color");
+    sunLightFolder.add(this.lightHelper, "visible").name("lightHelperVisible");
+    sunLightFolder.addColor(this.lightConfig, "startColor").onChange(lerpColor);
+    sunLightFolder.addColor(this.lightConfig, "endColor").onChange(lerpColor);
+    sunLightFolder
+      .add(this.lightConfig, "lerpValue", 0, 1, 0.01)
+      .onChange(lerpColor);
   }
 
   update() {
     this.material.uniforms.timeElapsed.value = this.time.elapsed;
+    this.lightHelper.update();
   }
 }
