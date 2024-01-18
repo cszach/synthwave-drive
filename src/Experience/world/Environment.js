@@ -6,6 +6,7 @@ import skyFragmentShader from "../shaders/sky.frag";
 export default class Environment {
   constructor() {
     this.experience = new Experience();
+    this.cubeCamera = this.experience.cubeCamera;
     this.scene = this.experience.scene;
     this.resources = this.experience.resources;
     this.colorPalette = this.experience.colorPalette;
@@ -46,6 +47,8 @@ export default class Environment {
     });
 
     this.sky = new THREE.Mesh(this.skyGeometry, this.skyMaterial);
+    // this.sky.layers.enable(this.cubeCamera.layerNumber);
+
     this.scene.add(this.sky);
   }
 

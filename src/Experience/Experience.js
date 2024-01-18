@@ -9,6 +9,7 @@ import Debug from "./utils/Debug";
 import sources from "./sources";
 import Keyboard from "./utils/Keyboard";
 import colorPalette from "./colorPalette";
+import CubeCamera from "./CubeCamera";
 
 let instance = null;
 
@@ -37,6 +38,7 @@ export default class Experience {
     this.camera = this.debug.camera;
     this.renderer = new Renderer();
     this.world = new World();
+    this.cubeCamera = new CubeCamera();
 
     this.resources.on("ready", () => {
       if (this.debug.active) {
@@ -88,6 +90,7 @@ export default class Experience {
   update() {
     this.camera.update();
     this.world.update();
+    this.cubeCamera.update();
     this.renderer.update();
   }
 
