@@ -6,6 +6,7 @@ import sunFragmentShader from "../shaders/sun.frag";
 export default class Sun {
   constructor() {
     this.experience = new Experience();
+    this.cubeCamera = this.experience.cubeCamera;
     this.scene = this.experience.scene;
     this.terrain = this.experience.world.terrain;
     this.time = this.experience.time;
@@ -73,6 +74,7 @@ export default class Sun {
     this.mesh.position.y = this.initialConfig.elevation;
     this.mesh.position.z = 1000;
     this.mesh.rotation.x = Math.PI;
+    this.mesh.layers.enable(this.cubeCamera.layerNumber);
 
     this.scene.add(this.mesh);
   }
