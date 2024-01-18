@@ -34,6 +34,10 @@ export default class Car {
        * the right values using the debug UI.
        */
       carPosAdjust: new THREE.Vector3(0, -0.098, 0.212),
+      /**
+       * The environment map intensity applied on the meshes in the car model.
+       */
+      envMapIntensity: 1,
     };
 
     this.setModel();
@@ -67,6 +71,7 @@ export default class Car {
     this.model.traverse((child) => {
       if (child.isMesh) {
         child.material.envMap = this.cubeCamera.instance.renderTarget.texture;
+        child.material.envMapIntensity = this.config.envMapIntensity;
       }
     });
 
@@ -100,6 +105,17 @@ export default class Car {
     this.debugFolder
       .add(this.config.carPosAdjust, "z", -1, 1, 0.001)
       .name("carPosAdjustZ");
+    this.debugFolder
+      .add(this.config, "envMapIntensity", 0, 10, 0.1)
+      .onChange(() => {
+        this.model.traverse((child) => {
+          if (child.isMesh) {
+            child.material.envMap =
+              this.cubeCamera.instance.renderTarget.texture;
+            child.material.envMapIntensity = this.config.envMapIntensity;
+          }
+        });
+      });
 
     // Camera debug
     this.camera.setDebug("Car camera", this.debugFolder);
