@@ -170,6 +170,6 @@ export default class Sun {
 
   update() {
     this.material.uniforms.timeElapsed.value = this.time.elapsed;
-    this.lightHelper.update();
+    if (this.lightHelper) this.lightHelper.update();
   }
 }
