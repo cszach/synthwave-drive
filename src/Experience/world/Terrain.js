@@ -25,8 +25,7 @@ export default class Terrain {
        * Since we use the x and y coordinates to get the height, the z value can
        * be used to randomize terrains.
        */
-      // zFactor: Math.random(),
-      zFactor: 0.914, // TODO: set back to random later
+      zFactor: Math.random(),
 
       /* We add noises at 3 different frequencies and amplitudes for interesting
       results (hopefully). */
