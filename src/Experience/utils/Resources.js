@@ -1,11 +1,16 @@
 import * as THREE from "three";
+import Experience from "../Experience";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import EventEmitter from "./EventEmitter";
+import { gsap } from "gsap";
 
 export default class Resources extends EventEmitter {
   constructor(sources) {
     super();
+
+    this.experience = new Experience();
+    this.overlay = this.experience.overlay;
 
     // Options
     this.sources = sources;
@@ -15,17 +20,35 @@ export default class Resources extends EventEmitter {
     this.toLoad = this.sources.length;
     this.loaded = 0;
 
+    this.setLoadingManager();
     this.setLoaders();
     // FIXME: experience won't load if there is no resources: event is triggered
     // before World is created
     this.toLoad > 0 ? this.startLoading() : this.trigger("ready");
   }
 
+  setLoadingManager() {
+    this.loadingManager = new THREE.LoadingManager(
+      // Loaded
+      () => {
+        gsap.to(this.overlay.material.uniforms.overlayAlpha, {
+          duration: 3,
+          value: 0,
+        });
+      },
+
+      // Progress
+      () => {
+        console.log("progress");
+      }
+    );
+  }
+
   setLoaders() {
     this.loaders = {
-      gltfLoader: new GLTFLoader(),
-      textureLoader: new THREE.TextureLoader(),
-      cubeTextureLoader: new THREE.CubeTextureLoader(),
+      gltfLoader: new GLTFLoader(this.loadingManager),
+      textureLoader: new THREE.TextureLoader(this.loadingManager),
+      cubeTextureLoader: new THREE.CubeTextureLoader(this.loadingManager),
     };
 
     const dracoLoader = new DRACOLoader();

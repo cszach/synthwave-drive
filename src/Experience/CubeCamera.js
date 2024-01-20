@@ -25,7 +25,9 @@ export default class CubeCamera {
   update() {
     const car = this.experience.world.car;
 
-    this.instance.position.copy(car.model.position);
-    this.instance.update(this.renderer.instance, this.scene);
+    if (car) {
+      this.instance.position.copy(car.model.position);
+      this.instance.update(this.renderer.instance, this.scene);
+    }
   }
 }
