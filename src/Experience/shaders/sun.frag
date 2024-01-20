@@ -10,6 +10,7 @@ uniform float lerpStart;
 uniform float lerpEnd;
 uniform vec3 bottomColor;
 uniform vec3 topColor;
+uniform float glowSize;
 
 varying vec2 vUv;
 
@@ -23,8 +24,15 @@ float wave(float x) {
 }
 
 void main() {
-  bool isSun = step(distance(vUv, vec2(0.5)), sunRadius) == 1.0;
+  float distanceFromCenter = distance(vUv, vec2(0.5));
+
+  bool isSun = step(distanceFromCenter, sunRadius) == 1.0;
   float alpha = isSun ? 1.0 : 0.0;
+
+  if (distanceFromCenter > sunRadius &&
+      distanceFromCenter < sunRadius + glowSize) {
+    alpha = 1.0 - (distanceFromCenter - sunRadius) / glowSize;
+  }
 
   if (vUv.y < gapsLower && vUv.y > gapsUpper && wave(vUv.y) > 0.0) {
     alpha = 0.0;

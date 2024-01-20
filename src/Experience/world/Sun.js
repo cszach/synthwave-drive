@@ -36,6 +36,8 @@ export default class Sun {
       lerpStart: 0.3,
       /** The UV y coordinate where the color interpolation ends (at the bottom). */
       lerpEnd: 0.5,
+      /** The size of the glow around the sun. */
+      glowSize: 0.03,
     };
 
     this.lightConfig = {
@@ -71,6 +73,7 @@ export default class Sun {
         lerpEnd: { value: this.initialConfig.lerpEnd },
         bottomColor: { value: new THREE.Color(this.colorPalette.rose) },
         topColor: { value: new THREE.Color(this.colorPalette.gold) },
+        glowSize: { value: this.initialConfig.glowSize },
         timeElapsed: { value: 0 }, // in milliseconds
       },
     });
@@ -147,6 +150,9 @@ export default class Sun {
     this.debugFolder
       .add(this.material.uniforms.lerpEnd, "value", 0.0, 1.0, 0.01)
       .name("lerpEnd");
+    this.debugFolder
+      .add(this.material.uniforms.glowSize, "value", 0.0, 1.0, 0.01)
+      .name("glowSize");
 
     const sunLightFolder = this.debugFolder.addFolder("Light");
 
