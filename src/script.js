@@ -19,6 +19,9 @@ button.addEventListener("click", () => {
     gsap.to(intro, {
       opacity: 0,
       duration: 2,
+      onComplete: () => {
+        intro.style.pointerEvents = "none";
+      },
     });
   }
 });
