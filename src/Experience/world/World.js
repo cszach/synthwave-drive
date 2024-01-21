@@ -3,6 +3,7 @@ import Environment from "./Environment";
 import Car from "./car/Car";
 import Terrain from "./Terrain";
 import Sun from "./Sun";
+import Tree from "./Tree";
 
 export default class World {
   constructor() {
@@ -15,6 +16,7 @@ export default class World {
       this.terrain = new Terrain();
       this.sun = new Sun();
       this.car = new Car();
+      this.tree = new Tree();
       this.environment = new Environment();
 
       if (!this.debug.active) {
