@@ -10,7 +10,6 @@ import sources from "./sources";
 import Keyboard from "./utils/Keyboard";
 import colorPalette from "./colorPalette";
 import CubeCamera from "./CubeCamera";
-import Overlay from "./Overlay";
 
 let instance = null;
 
@@ -34,7 +33,6 @@ export default class Experience {
     this.time = new Time();
     this.keyboard = new Keyboard();
     this.scene = new THREE.Scene();
-    this.overlay = new Overlay();
     this.debug = new Debug(config.debugActive, config.physicsHelpersEnabled);
     this.resources = new Resources(sources);
     this.camera = this.debug.camera;
