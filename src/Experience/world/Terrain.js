@@ -214,6 +214,7 @@ export default class Terrain {
       this.terrainGeometry,
       this.terrainMaterial
     );
+    terrainMesh.layers.enable(this.cubeCamera.layerNumber);
 
     const wireframeMesh = new THREE.LineSegments(
       this.wireframeGeometry,
