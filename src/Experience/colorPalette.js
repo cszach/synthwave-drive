@@ -2,7 +2,7 @@
 export default {
   gold: "#FFD319",
   yellow: "#FFB21C",
-  orange: "FF901F",
+  orange: "#FF901F",
   rose: "#FF2975",
   fuchsia: "#FF19E8",
   cyan: "#03FFF0",

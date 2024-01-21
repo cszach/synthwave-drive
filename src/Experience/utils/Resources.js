@@ -28,26 +28,27 @@ export default class Resources extends EventEmitter {
   }
 
   setLoadingManager() {
-    const loadingBarElement = document.querySelector(".loading-bar");
+    const button = document.querySelector(".button");
+    const loading = document.querySelector(".loading");
 
     this.loadingManager = new THREE.LoadingManager(
       // Loaded
       () => {
         gsap.delayedCall(0.5, () => {
-          gsap.to(this.overlay.material.uniforms.overlayAlpha, {
-            duration: 3,
-            value: 0,
-          });
+          // gsap.to(this.overlay.material.uniforms.overlayAlpha, {
+          //   duration: 3,
+          //   value: 0,
+          // });
 
-          loadingBarElement.classList.add("ended");
-          loadingBarElement.style.transform = "";
+          button.classList.add("activated");
         });
       },
 
       // Progress
       (itemUrl, itemsLoaded, itemsTotal) => {
         const progress = itemsLoaded / itemsTotal;
-        loadingBarElement.style.transform = `scaleX(${progress})`;
+
+        loading.innerHTML = Math.round(progress * 100);
       }
     );
   }
