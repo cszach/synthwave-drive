@@ -2,7 +2,7 @@ import * as THREE from "three";
 import Experience from "../Experience";
 import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils";
 
-export default class Tree {
+export default class Trees {
   constructor() {
     this.experience = new Experience();
     this.cubeCamera = this.experience.cubeCamera;
@@ -11,17 +11,13 @@ export default class Tree {
     this.resource = this.resources.items.treeModel;
     this.colorPalette = this.experience.colorPalette;
 
-    this.setModel();
+    this.setGeometry();
+    this.setMaterial();
     this.setWireframe();
   }
 
-  setModel() {
+  setGeometry() {
     this.model = this.resource;
-
-    this.material = new THREE.MeshLambertMaterial({
-      color: this.colorPalette.night,
-      flatShading: true,
-    });
 
     const geometries = [];
 
@@ -36,21 +32,19 @@ export default class Tree {
     });
 
     this.geometry = BufferGeometryUtils.mergeGeometries(geometries);
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
+  }
 
-    this.scene.add(this.mesh);
+  setMaterial() {
+    this.material = new THREE.MeshLambertMaterial({
+      color: this.colorPalette.night,
+      flatShading: true,
+    });
   }
 
   setWireframe() {
-    this.wireframeGeometry = new THREE.WireframeGeometry(this.geometry);
-    this.wireframeMaterial = new THREE.LineBasicMaterial({
+    this.wireframeMaterial = new THREE.MeshBasicMaterial({
+      wireframe: true,
       color: this.colorPalette.cyan,
     });
-    this.wireframe = new THREE.LineSegments(
-      this.wireframeGeometry,
-      this.wireframeMaterial
-    );
-
-    this.scene.add(this.wireframe);
   }
 }
