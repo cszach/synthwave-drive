@@ -16,12 +16,11 @@ const button = document.querySelector(".button");
 // Intro screen fades when start button is clicked
 button.addEventListener("click", () => {
   if (button.classList.contains("activated")) {
+    intro.style.pointerEvents = "none";
+
     gsap.to(intro, {
       opacity: 0,
       duration: 2,
-      onComplete: () => {
-        intro.style.pointerEvents = "none";
-      },
     });
   }
 });
