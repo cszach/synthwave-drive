@@ -178,10 +178,8 @@ export default class Terrain {
   }
 
   setMaterial() {
-    this.terrainMaterial = new THREE.MeshStandardMaterial({
+    this.terrainMaterial = new THREE.MeshLambertMaterial({
       color: this.colorPalette.night,
-      metalness: 0,
-      roughness: 0.66,
       flatShading: true,
     });
 
@@ -189,13 +187,10 @@ export default class Terrain {
       color: this.colorPalette.fuchsia,
     });
 
-    this.floorMaterial = new THREE.MeshStandardMaterial({
-      color: this.colorPalette.night,
-      metalness: 0,
-      roughness: 0,
-      flatShading: true,
+    this.floorMaterial = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(0xffffff),
+      // flatShading: true,
       envMap: this.cubeCamera.instance.renderTarget.texture,
-      envMapIntensity: 1,
     });
 
     this.floorWireframeMaterial = new THREE.LineBasicMaterial({
@@ -233,10 +228,7 @@ export default class Terrain {
     floorWireframeMesh.position.z =
       this.config.floorElevation * this.config.multiplier + 0.05;
 
-    this.mesh.add(terrainMesh);
-    this.mesh.add(wireframeMesh);
-    this.mesh.add(floorMesh);
-    this.mesh.add(floorWireframeMesh);
+    this.mesh.add(terrainMesh, wireframeMesh, floorMesh, floorWireframeMesh);
     // Make sure the floor's world y position is 0.
     this.mesh.position.y = -this.config.floorElevation * this.config.multiplier;
     this.mesh.rotation.x = -Math.PI / 2;
@@ -286,21 +278,13 @@ export default class Terrain {
     const terrainMaterialFolder =
       this.debugFolder.addFolder("Terrain material");
 
-    terrainMaterialFolder.add(this.terrainMaterial, "metalness", 0, 1, 0.01);
-    terrainMaterialFolder.add(this.terrainMaterial, "roughness", 0, 1, 0.01);
     terrainMaterialFolder
       .addColor(this.terrainMaterial, "color")
       .name("terrainColor");
     terrainMaterialFolder
       .addColor(this.wireframeMaterial, "color")
       .name("wireframeColor");
-
-    const floorMaterialFolder = this.debugFolder.addFolder("Floor material");
-
-    floorMaterialFolder.add(this.floorMaterial, "metalness", 0, 1, 0.01);
-    floorMaterialFolder.add(this.floorMaterial, "roughness", 0, 1, 0.01);
-    floorMaterialFolder.add(this.floorMaterial, "envMapIntensity", 0, 10, 0.01);
-    floorMaterialFolder
+    terrainMaterialFolder
       .addColor(this.floorWireframeMaterial, "color")
       .name("floorWireframeColor");
   }
