@@ -40,10 +40,6 @@ export default class Experience {
     this.world = new World();
     this.cubeCamera = new CubeCamera();
 
-    window.requestAnimationFrame(() => {
-      this.time.tick();
-    });
-
     this.resources.on("ready", () => {
       if (this.debug.active) {
         this.debug.ui.foldersRecursive().forEach((folder) => {
@@ -71,6 +67,10 @@ export default class Experience {
             }
             break;
         }
+      });
+
+      window.requestAnimationFrame(() => {
+        this.time.tick();
       });
     });
 

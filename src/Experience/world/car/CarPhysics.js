@@ -109,6 +109,7 @@ export default class CarPhysics {
     });
 
     this.chassisBody.position.copy(this.chassisWorldPosition);
+    this.chassisBody.position.y += 2; // drop from 2 units above the ground
     this.chassisBody.quaternion.setFromEuler(0, -Math.PI, 0); // face the positive z direction
   }
 

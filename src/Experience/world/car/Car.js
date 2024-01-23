@@ -118,12 +118,12 @@ export default class Car {
       elevationData[index] / multiplier + 2, // spawn the car 2 meters above the terrain point
       nz * terrainDepth - terrainDepth / 2
     );
+    this.position = new THREE.Vector3();
   }
 
   setModel() {
     this.model = this.resource.scene;
     this.model.scale.setScalar(this.config.scale);
-    this.model.position.copy(this.spawnLocation);
     this.scene.add(this.model);
 
     console.log(this.model);
@@ -193,13 +193,15 @@ export default class Car {
 
     this.physics.update();
 
-    this.model.position
-      .copy(this.physics.chassisBody.position.clone())
-      .add(
-        this.config.carPosAdjust
-          .clone()
-          .applyQuaternion(this.physics.chassisBody.quaternion)
-      );
+    this.position.copy(
+      this.physics.chassisBody.position
+        .clone()
+        .vadd(
+          this.config.carPosAdjust
+            .clone()
+            .applyQuaternion(this.physics.chassisBody.quaternion)
+        )
+    );
     this.model.quaternion.copy(this.physics.chassisBody.quaternion);
 
     this.wheels.forEach((wheel, i) => {
