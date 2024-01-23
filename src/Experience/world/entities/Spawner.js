@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import Experience from "./Experience";
+import Experience from "../../Experience";
 import { gsap } from "gsap/gsap-core";
 
 /**
