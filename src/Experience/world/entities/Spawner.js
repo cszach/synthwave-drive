@@ -95,6 +95,14 @@ export default class Spawner {
     this.doneTransitioning = true;
   }
 
+  /**
+   * Must call this spawn manually in the first time. After that, spawning will
+   * be managed by the update method.
+   *
+   * @param {number} count
+   * @param {number} generationRadius
+   * @returns
+   */
   spawn(
     count = this.options.count,
     generationRadius = this.options.generationRadius
