@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import Experience from "../Experience";
-import { ImprovedNoise } from "three/examples/jsm/math/ImprovedNoise";
+import Experience from "../../Experience";
+import { SimplexNoise } from "three/examples/jsm/math/SimplexNoise";
 
 export default class Terrain {
   constructor() {
@@ -41,7 +41,7 @@ export default class Terrain {
        * The factor by which the Perlin noise output will be multiplied at the
        * end to make terrains more prominent.
        */
-      multiplier: 139.5,
+      multiplier: 49.8,
       /**
        * Redistribution factor. Higher values push middle elevations down into
        * valleys and lower values pull middle elevations up towards the peaks.
@@ -72,7 +72,7 @@ export default class Terrain {
 
     this.elevation = new Float32Array(verticesWidth * verticesDepth);
 
-    const perlin = new ImprovedNoise();
+    const simplex = new SimplexNoise();
 
     for (let y = 0; y < verticesDepth; y++) {
       for (let x = 0; x < verticesWidth; x++) {
@@ -80,7 +80,7 @@ export default class Terrain {
         const ny = y / verticesDepth;
 
         let elevation =
-          (perlin.noise(
+          (simplex.noise3d(
             nx * this.config.frequency1,
             ny * this.config.frequency1,
             this.config.zFactor
@@ -90,7 +90,7 @@ export default class Terrain {
           this.config.amplitude1;
 
         elevation +=
-          (perlin.noise(
+          (simplex.noise3d(
             nx * this.config.frequency2 + 5.3,
             ny * this.config.frequency2 + 9.1,
             this.config.zFactor
@@ -100,7 +100,7 @@ export default class Terrain {
           this.config.amplitude2;
 
         elevation +=
-          (perlin.noise(
+          (simplex.noise3d(
             nx * this.config.frequency3 + 17.8,
             ny * this.config.frequency3 + 23.5,
             this.config.zFactor

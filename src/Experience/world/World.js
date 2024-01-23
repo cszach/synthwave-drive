@@ -1,7 +1,7 @@
 import Experience from "../Experience";
 import Environment from "./Environment";
 import Car from "./car/Car";
-import Terrain from "./Terrain";
+import Terrain from "./terrain/Terrain";
 import Sun from "./Sun";
 import TreeSpawner from "./entities/TreeSpawner";
 // import MirrorSpawner from "./entities/MirrorSpawner";
@@ -17,13 +17,13 @@ export default class World {
     this.resources.on("ready", () => {
       this.terrain = new Terrain();
       this.sun = new Sun();
-      this.car = new Car();
-      this.treeSpawner = TreeSpawner.new();
+      // this.car = new Car();
+      // this.treeSpawner = TreeSpawner.new();
       // this.mirrorSpawner = MirrorSpawner.new();
       this.environment = new Environment();
 
       gsap.delayedCall(1.5, () => {
-        this.treeSpawner.spawn();
+        // this.treeSpawner.spawn();
         // this.mirrorSpawner.spawn();
       });
 
@@ -34,15 +34,15 @@ export default class World {
   }
 
   update() {
-    this.car.update();
+    // this.car.update();
     this.sun.update();
-    this.treeSpawner.update();
+    // this.treeSpawner.update();
     // this.mirrorSpawner.update();
 
     // Update terrain: instead of moving the car, move the terrain instead.
-    this.terrain.mesh.position.copy(this.car.position).negate();
-    this.terrain.mesh.position.y =
-      -this.terrain.config.multiplier * this.terrain.config.floorElevation -
-      this.car.position.y;
+    // this.terrain.mesh.position.copy(this.car.position).negate();
+    // this.terrain.mesh.position.y =
+    //   -this.terrain.config.multiplier * this.terrain.config.floorElevation -
+    //   this.car.position.y;
   }
 }
