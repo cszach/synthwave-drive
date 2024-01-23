@@ -189,7 +189,6 @@ export default class Terrain {
 
     this.floorMaterial = new THREE.MeshBasicMaterial({
       color: new THREE.Color(0xffffff),
-      // flatShading: true,
       envMap: this.cubeCamera.instance.renderTarget.texture,
     });
 
@@ -217,16 +216,17 @@ export default class Terrain {
     );
     wireframeMesh.layers.enable(this.cubeCamera.layerNumber);
 
+    // FIXME: fix z-fighting
+
     const floorMesh = new THREE.Mesh(this.floorGeometry, this.floorMaterial);
-    floorMesh.position.z =
-      this.config.floorElevation * this.config.multiplier + 0.05;
+    floorMesh.position.z = this.config.floorElevation * this.config.multiplier;
 
     const floorWireframeMesh = new THREE.LineSegments(
       this.floorWireframeGeometry,
       this.floorWireframeMaterial
     );
     floorWireframeMesh.position.z =
-      this.config.floorElevation * this.config.multiplier + 0.05;
+      this.config.floorElevation * this.config.multiplier;
 
     this.mesh.add(terrainMesh, wireframeMesh, floorMesh, floorWireframeMesh);
     // Make sure the floor's world y position is 0.
