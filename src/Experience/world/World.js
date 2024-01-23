@@ -1,3 +1,4 @@
+import * as THREE from "three";
 import Experience from "../Experience";
 import Environment from "./Environment";
 import Car from "./car/Car";
@@ -22,12 +23,13 @@ export default class World {
       this.spawner = new Spawner(
         [this.tree.geometry],
         [this.tree.material, this.tree.wireframeMaterial],
-        this.car.model.position,
+        this.car.position,
         {
-          count: 50,
+          count: 42,
           triggerRadius: 150,
-          generationRadius: 200,
+          generationRadius: 300,
           yStart: -20,
+          yEnd: 0,
         },
         [this.experience.cubeCamera.layerNumber]
       );
@@ -44,16 +46,14 @@ export default class World {
   }
 
   update() {
-    if (this.car) {
-      this.car.update();
-    }
+    this.car.update();
+    this.sun.update();
+    this.spawner.update();
 
-    if (this.sun) {
-      this.sun.update();
-    }
-
-    if (this.spawner) {
-      this.spawner.update();
-    }
+    // Update terrain: instead of moving the car, move the terrain instead.
+    this.terrain.mesh.position.copy(this.car.position).negate();
+    this.terrain.mesh.position.y =
+      -this.terrain.config.multiplier * this.terrain.config.floorElevation -
+      this.car.position.y;
   }
 }
