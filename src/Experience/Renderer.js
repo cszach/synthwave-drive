@@ -3,6 +3,7 @@ import Experience from "./Experience";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
 
 export default class Renderer {
   constructor() {
@@ -11,9 +12,11 @@ export default class Renderer {
     this.sizes = this.experience.sizes;
     this.scene = this.experience.scene;
     this.camera = this.experience.camera;
+    this.debug = this.experience.debug;
 
     this.setInstance();
     this.setPostProcessing();
+    if (this.debug.active) this.setDebug();
   }
 
   setInstance() {
@@ -45,6 +48,14 @@ export default class Renderer {
     this.renderPass = new RenderPass(this.scene, this.camera.instance);
     this.effectComposer.addPass(this.renderPass);
 
+    // Bloom pass
+
+    this.bloomPass = new UnrealBloomPass();
+    this.bloomPass.strength = 1;
+    this.bloomPass.radius = 1;
+    this.bloomPass.threshold = 0.4;
+    this.effectComposer.addPass(this.bloomPass);
+
     // Anti-aliasing pass, only if the browser does not support WebGL 2.
 
     if (
@@ -54,6 +65,19 @@ export default class Renderer {
       this.smaaPass = new SMAAPass();
       this.effectComposer.addPass(this.smaaPass);
     }
+  }
+
+  setDebug() {
+    this.debugFolder = this.debug.ui.addFolder("Post-processing");
+
+    console.log(this.bloomPass);
+
+    const bloomPassFolder = this.debugFolder.addFolder("Bloom pass");
+
+    bloomPassFolder.add(this.bloomPass, "enabled");
+    bloomPassFolder.add(this.bloomPass, "strength").min(0).max(2).step(0.001);
+    bloomPassFolder.add(this.bloomPass, "radius").min(0).max(2).step(0.001);
+    bloomPassFolder.add(this.bloomPass, "threshold").min(0).max(2).step(0.001);
   }
 
   resize() {
