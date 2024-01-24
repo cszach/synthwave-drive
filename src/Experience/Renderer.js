@@ -4,6 +4,7 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
+import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass";
 
 export default class Renderer {
   constructor() {
@@ -65,6 +66,11 @@ export default class Renderer {
       this.smaaPass = new SMAAPass();
       this.effectComposer.addPass(this.smaaPass);
     }
+
+    // Output pass
+
+    this.outputPass = new OutputPass();
+    this.effectComposer.addPass(this.outputPass);
   }
 
   setDebug() {
