@@ -57,12 +57,14 @@ export default class Experience {
         switch (key) {
           case "1":
             this.camera = this.world.car.camera;
+            this.renderer.renderPass.camera = this.camera.instance;
             this.resize();
             break;
 
           case "0":
             if (this.debug.active) {
               this.camera = this.debug.camera;
+              this.renderer.renderPass.camera = this.camera.instance;
               this.resize();
             } else {
               console.error("Debug is not active");
