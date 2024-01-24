@@ -2,6 +2,9 @@ import * as THREE from "three";
 import Experience from "../../Experience";
 import { SimplexNoise } from "three/examples/jsm/math/SimplexNoise";
 
+const TAU = Math.PI * 2;
+const sqrtTwo = Math.sqrt(2);
+
 export default class Terrain {
   constructor() {
     this.experience = new Experience();
@@ -26,15 +29,16 @@ export default class Terrain {
        * be used to randomize terrains.
        */
       zFactor: Math.random(),
+      tune: Math.sqrt(2),
 
       /* We add noises at 3 different frequencies and amplitudes for interesting
       results (hopefully). */
 
-      frequency1: 14.81,
+      frequency1: 4,
       amplitude1: 1.0,
-      frequency2: 26.98,
+      frequency2: 8,
       amplitude2: 0.5,
-      frequency3: 22.11,
+      frequency3: 16,
       amplitude3: 0.25,
 
       /**
@@ -46,7 +50,7 @@ export default class Terrain {
        * Redistribution factor. Higher values push middle elevations down into
        * valleys and lower values pull middle elevations up towards the peaks.
        */
-      exp: 2.14,
+      exp: 2.55,
       /**
        * Fudge factor for the redistribution.
        */
@@ -55,7 +59,7 @@ export default class Terrain {
        * Any values from the Perlin noise function that is lower than this value
        * will be set equal to this value to make a floor.
        */
-      floorElevation: 0.4,
+      floorElevation: 0.62,
     };
 
     this.generateElevation();
@@ -63,6 +67,22 @@ export default class Terrain {
     this.setMaterial();
     this.setMesh();
     if (this.debug.active) this.setDebug();
+  }
+
+  static torusNoise(simplex, nx, ny) {
+    const angleX = TAU * nx;
+    const angleY = TAU * ny;
+
+    return (
+      simplex.noise4d(
+        Math.cos(angleX) / TAU,
+        Math.sin(angleX) / TAU,
+        Math.cos(angleY) / TAU,
+        Math.sin(angleY) / TAU
+      ) *
+        0.5 +
+      0.5
+    );
   }
 
   // Thanks to tutorial from https://www.redblobgames.com/maps/terrain-from-noise/
@@ -73,41 +93,43 @@ export default class Terrain {
     this.elevation = new Float32Array(verticesWidth * verticesDepth);
 
     const simplex = new SimplexNoise();
+    const {
+      frequency1,
+      frequency2,
+      frequency3,
+      amplitude1,
+      amplitude2,
+      amplitude3,
+      tune,
+    } = this.config;
 
     for (let y = 0; y < verticesDepth; y++) {
       for (let x = 0; x < verticesWidth; x++) {
-        const nx = x / verticesWidth;
-        const ny = y / verticesDepth;
+        const nx = x / (verticesWidth - 1);
+        const ny = y / (verticesDepth - 1);
 
         let elevation =
-          (simplex.noise3d(
-            nx * this.config.frequency1,
-            ny * this.config.frequency1,
-            this.config.zFactor
-          ) *
-            0.5 +
-            0.5) *
-          this.config.amplitude1;
+          tune *
+          Terrain.torusNoise(simplex, nx * frequency1, ny * frequency1) *
+          amplitude1;
 
         elevation +=
-          (simplex.noise3d(
-            nx * this.config.frequency2 + 5.3,
-            ny * this.config.frequency2 + 9.1,
-            this.config.zFactor
+          tune *
+          Terrain.torusNoise(
+            simplex,
+            nx * frequency2 + 5.3,
+            ny * frequency2 + 9.1
           ) *
-            0.5 +
-            0.5) *
-          this.config.amplitude2;
+          amplitude2;
 
         elevation +=
-          (simplex.noise3d(
-            nx * this.config.frequency3 + 17.8,
-            ny * this.config.frequency3 + 23.5,
-            this.config.zFactor
+          tune *
+          Terrain.torusNoise(
+            simplex,
+            nx * frequency3 + 17.8,
+            ny * frequency3 + 23.5
           ) *
-            0.5 +
-            0.5) *
-          this.config.amplitude3;
+          amplitude3;
 
         elevation /=
           this.config.amplitude1 +
@@ -261,12 +283,13 @@ export default class Terrain {
     terrainGeometryFolder.add(debug, "verticesWidth", 8, 512, 1);
     terrainGeometryFolder.add(debug, "verticesDepth", 8, 512, 1);
     const zControl = terrainGeometryFolder.add(debug, "zFactor", 0, 1, 0.001);
-    terrainGeometryFolder.add(debug, "frequency1", 1.0, 100.0, 0.01);
+    terrainGeometryFolder.add(debug, "frequency1", 0.0, 50.0, 1);
     terrainGeometryFolder.add(debug, "amplitude1", 0.0, 1.0, 0.001);
-    terrainGeometryFolder.add(debug, "frequency2", 1.0, 100.0, 0.01);
+    terrainGeometryFolder.add(debug, "frequency2", 0.0, 50.0, 1);
     terrainGeometryFolder.add(debug, "amplitude2", 0.0, 1.0, 0.001);
-    terrainGeometryFolder.add(debug, "frequency3", 1.0, 100.0, 0.01);
+    terrainGeometryFolder.add(debug, "frequency3", 0.0, 50.0, 1);
     terrainGeometryFolder.add(debug, "amplitude3", 0.0, 1.0, 0.001);
+    terrainGeometryFolder.add(debug, "tune", 0.1, 3.0, 0.01);
     terrainGeometryFolder.add(debug, "multiplier", 0.0, 1000.0, 0.1);
     terrainGeometryFolder.add(debug, "exp", 0.01, 10.0, 0.01);
     terrainGeometryFolder.add(debug, "fudgeFactor", 0.01, 2.0, 0.01);
