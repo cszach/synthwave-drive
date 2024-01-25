@@ -79,7 +79,9 @@ export default class Experience {
 
     // Time tick event
     this.time.on("tick", () => {
+      this.debug.stats.begin();
       this.update();
+      this.debug.stats.end();
     });
   }
 

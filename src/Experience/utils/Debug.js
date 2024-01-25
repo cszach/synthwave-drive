@@ -2,15 +2,20 @@ import GUI from "lil-gui";
 import Experience from "../Experience";
 import Camera from "../Camera";
 import { MapControls } from "three/examples/jsm/controls/MapControls";
+import Stats from "stats.js";
 
 export default class Debug {
   constructor(debugActive, physicsHelpersEnabled) {
     this.active = debugActive;
     this.physicsHelpersEnabled = physicsHelpersEnabled;
+    this.stats = new Stats();
 
     if (this.active) {
       this.ui = new GUI();
       this.ui.hide(); // show on event "ready"
+
+      this.stats.showPanel(0);
+      document.body.appendChild(this.stats.dom);
     }
 
     this.setCamera();
