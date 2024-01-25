@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import Experience from "../Experience";
 import { ImprovedNoise } from "three/examples/jsm/math/ImprovedNoise";
-import { ReflectorForSSRPass } from "three/examples/jsm/objects/ReflectorForSSRPass";
 
 export default class Terrain {
   constructor() {
@@ -191,7 +190,6 @@ export default class Terrain {
 
     this.floorMaterial = new THREE.MeshBasicMaterial({
       color: new THREE.Color(0xffffff),
-      // flatShading: true,
       envMap: this.cubeCamera.instance.renderTarget.texture,
     });
 
@@ -219,15 +217,7 @@ export default class Terrain {
     );
     wireframeMesh.layers.enable(this.cubeCamera.layerNumber);
 
-    // const floorMesh = new THREE.Mesh(this.floorGeometry, this.floorMaterial);
-    const floorMesh = new ReflectorForSSRPass(this.floorGeometry, {
-      clipBias: 0.0003,
-      textureWidth: this.sizes.width,
-      textureHeight: this.sizes.height,
-      color: 0x888888,
-      useDepthTexture: true,
-    });
-    floorMesh.material.depthWrite = false;
+    const floorMesh = new THREE.Mesh(this.floorGeometry, this.floorMaterial);
     floorMesh.position.z =
       this.config.floorElevation * this.config.multiplier + 0.05;
 
