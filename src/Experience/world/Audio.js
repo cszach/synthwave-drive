@@ -38,7 +38,6 @@ export default class Audio {
     this.audio.setBuffer(this.tracks[this.index]);
 
     this.audio.onEnded = () => {
-      console.log("new music!");
       this.audio.stop();
 
       this.index = (this.index + 1) % this.tracks.length;

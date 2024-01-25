@@ -38,8 +38,6 @@ export default class Renderer {
       samples: this.instance.getPixelRatio() === 1 ? 2 : 0,
     });
 
-    console.log(this.renderTarget);
-
     this.effectComposer = new EffectComposer(this.instance, this.renderTarget);
     this.effectComposer.setSize(this.sizes.width, this.sizes.height);
     this.effectComposer.setPixelRatio(this.sizes.pixelRatio);
@@ -75,8 +73,6 @@ export default class Renderer {
 
   setDebug() {
     this.debugFolder = this.debug.ui.addFolder("Post-processing");
-
-    console.log(this.bloomPass);
 
     const bloomPassFolder = this.debugFolder.addFolder("Bloom pass");
 
