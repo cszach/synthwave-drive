@@ -35,7 +35,7 @@ export default class Renderer {
 
   setPostProcessing() {
     this.renderTarget = new THREE.WebGLRenderTarget(800, 600, {
-      samples: this.instance.getPixelRatio() === 1 ? 3 : 0,
+      samples: this.instance.getPixelRatio() === 1 ? 2 : 0,
     });
 
     console.log(this.renderTarget);
@@ -52,8 +52,8 @@ export default class Renderer {
     // Bloom pass
 
     this.bloomPass = new UnrealBloomPass();
-    this.bloomPass.strength = 1;
-    this.bloomPass.radius = 1;
+    this.bloomPass.strength = 0.333;
+    this.bloomPass.radius = 0.5;
     this.bloomPass.threshold = 0.4;
     this.effectComposer.addPass(this.bloomPass);
 
