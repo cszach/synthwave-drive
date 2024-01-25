@@ -24,7 +24,10 @@ export default class Debug {
   setCamera() {
     this.canvas = new Experience().canvas;
     this.camera = new Camera();
+    this.camera.instance.far = 5000;
     this.camera.instance.position.set(10, 10, -25);
+
+    this.camera.instance.updateProjectionMatrix();
 
     this.camera.controls = new MapControls(this.camera.instance, this.canvas);
     this.camera.controls.enableDamping = true;
