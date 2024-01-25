@@ -12,7 +12,7 @@ export default class Camera {
     this.initialConfig = config || {
       fov: 35,
       near: 0.1,
-      far: 20000,
+      far: 1250,
     };
 
     this.setInstance();

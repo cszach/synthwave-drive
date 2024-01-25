@@ -20,7 +20,7 @@ export default class Environment {
     // Create a large sphere around the scene and renders on the backside so it
     // looks like a sky.
 
-    this.skyGeometry = new THREE.SphereGeometry(10000, 25, 25);
+    this.skyGeometry = new THREE.SphereGeometry(1200, 25, 25);
     this.skyMaterial = new THREE.ShaderMaterial({
       side: THREE.BackSide,
       uniforms: {
