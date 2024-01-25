@@ -47,21 +47,19 @@ export default class Experience {
         });
 
         this.debug.ui.show();
+      } else {
+        this.switchCameraTo(this.world.car.camera);
       }
 
       this.keyboard.on("keydown", (key) => {
         switch (key) {
           case "1":
-            this.camera = this.world.car.camera;
-            this.renderer.renderPass.camera = this.camera.instance;
-            this.resize();
+            this.switchCameraTo(this.world.car.camera);
             break;
 
           case "0":
             if (this.debug.active) {
-              this.camera = this.debug.camera;
-              this.renderer.renderPass.camera = this.camera.instance;
-              this.resize();
+              this.switchCameraTo(this.debug.camera);
             } else {
               console.error("Debug is not active");
             }
@@ -83,6 +81,12 @@ export default class Experience {
     this.time.on("tick", () => {
       this.update();
     });
+  }
+
+  switchCameraTo(camera) {
+    this.camera = camera;
+    this.renderer.renderPass.camera = this.camera.instance;
+    this.resize();
   }
 
   resize() {
