@@ -1,4 +1,3 @@
-import * as THREE from "three";
 import Experience from "../Experience";
 import Environment from "./Environment";
 import Car from "./car/Car";
@@ -7,6 +6,7 @@ import Sun from "./Sun";
 import TreeSpawner from "./entities/TreeSpawner";
 import FrameSpawner from "./entities/FrameSpawner";
 import { gsap } from "gsap/gsap-core";
+import Audio from "./Audio";
 
 export default class World {
   constructor() {
@@ -22,6 +22,7 @@ export default class World {
       this.treeSpawner = TreeSpawner.new();
       this.frameSpawner = FrameSpawner.new();
       this.environment = new Environment();
+      this.audio = new Audio();
 
       gsap.delayedCall(1.5, () => {
         this.treeSpawner.spawn();
