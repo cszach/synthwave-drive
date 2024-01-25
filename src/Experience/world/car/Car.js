@@ -147,6 +147,10 @@ export default class Car {
       this.model.getObjectByName("w_f_l"),
       this.model.getObjectByName("w_f_r"),
     ];
+
+    this.wheels.forEach((wheel) => {
+      wheel.rotation.order = "YXZ";
+    });
   }
 
   setCamera() {
@@ -220,6 +224,9 @@ export default class Car {
           this.model.getWorldQuaternion(new THREE.Quaternion()).invert()
         )
       );
+
+      // fix the wheels facing inward for some reason
+      wheel.rotation.y -= Math.PI;
     });
 
     // Update camera
