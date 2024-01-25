@@ -1,12 +1,10 @@
 import * as THREE from "three";
-import Experience from "../Experience";
+import Experience from "../../Experience";
 import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils";
 
 export default class Trees {
   constructor() {
     this.experience = new Experience();
-    this.cubeCamera = this.experience.cubeCamera;
-    this.scene = this.experience.scene;
     this.resources = this.experience.resources;
     this.resource = this.resources.items.treeModel;
     this.colorPalette = this.experience.colorPalette;

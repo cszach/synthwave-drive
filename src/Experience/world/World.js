@@ -4,8 +4,7 @@ import Environment from "./Environment";
 import Car from "./car/Car";
 import Terrain from "./Terrain";
 import Sun from "./Sun";
-import Tree from "./Tree";
-import Spawner from "../Spawner";
+import TreeSpawner from "./entities/TreeSpawner";
 import { gsap } from "gsap/gsap-core";
 
 export default class World {
@@ -19,24 +18,11 @@ export default class World {
       this.terrain = new Terrain();
       this.sun = new Sun();
       this.car = new Car();
-      this.tree = new Tree();
-      this.spawner = new Spawner(
-        [this.tree.geometry],
-        [this.tree.material, this.tree.wireframeMaterial],
-        this.car.position,
-        {
-          count: 42,
-          triggerRadius: 150,
-          generationRadius: 300,
-          yStart: -20,
-          yEnd: 0,
-        },
-        [this.experience.cubeCamera.layerNumber]
-      );
+      this.treeSpawner = TreeSpawner.new();
       this.environment = new Environment();
 
       gsap.delayedCall(1.5, () => {
-        this.spawner.spawn();
+        this.treeSpawner.spawn();
       });
 
       if (!this.debug.active) {
@@ -48,7 +34,7 @@ export default class World {
   update() {
     this.car.update();
     this.sun.update();
-    this.spawner.update();
+    this.treeSpawner.update();
 
     // Update terrain: instead of moving the car, move the terrain instead.
     this.terrain.mesh.position.copy(this.car.position).negate();
