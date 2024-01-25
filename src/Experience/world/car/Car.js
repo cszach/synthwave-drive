@@ -25,7 +25,7 @@ export default class Car {
        * the terrain's floor) to spawn the car on. The car's initial location
        * cannot be predetermined because terrain generation is random.
        */
-      spawnLocationSearchRadius: 0.01,
+      // spawnLocationSearchRadius: 0.01,
       /**
        * The scale scalar to apply to the car's model.
        *
@@ -50,7 +50,6 @@ export default class Car {
       envMapIntensity: 1,
     };
 
-    this.setSpawnLocation();
     this.setModel();
     this.setCamera();
     if (this.debug.active) {
@@ -67,64 +66,12 @@ export default class Car {
     this.controls = new CarControls(this.physics.vehicle);
   }
 
-  setSpawnLocation() {
-    const {
-      width: terrainWidth,
-      depth: terrainDepth,
-      verticesWidth,
-      verticesDepth,
-      floorElevation,
-      multiplier,
-    } = this.terrain.config;
-
-    const elevationData = this.terrain.elevation;
-    const dataLength = elevationData.length;
-    const multipliedFloorElevation = floorElevation * multiplier;
-
-    const searchLength = Math.floor(
-      dataLength * this.config.spawnLocationSearchRadius
-    );
-    const start = Math.floor((dataLength - searchLength) / 2);
-    const end = start + searchLength;
-
-    const indices = []; // the indices of points on the floor
-    let minIndex = start;
-
-    for (let i = start; i < end; i++) {
-      // compare if 2 floats are equal with some error tolerance due to floating
-      // point implementation
-      if (Math.abs(elevationData[i] - multipliedFloorElevation) < 0.000001) {
-        indices.push(i);
-      }
-
-      if (elevationData[i] < elevationData[minIndex]) {
-        minIndex = i;
-      }
-    }
-
-    if (indices.length == 0) {
-      indices.push(minIndex);
-    }
-
-    // Select a random location on the floor if possible, otherwise choose the
-    // lowest point.
-    const index = indices[Math.floor(indices.length * Math.random())];
-
-    const nx = (index % verticesWidth) / verticesWidth;
-    const nz = Math.floor(index / verticesWidth) / verticesDepth;
-
-    this.spawnLocation = new THREE.Vector3(
-      nx * terrainWidth - terrainWidth / 2,
-      elevationData[index] / multiplier + 2, // spawn the car 2 meters above the terrain point
-      nz * terrainDepth - terrainDepth / 2
-    );
-    this.position = new THREE.Vector3();
-  }
-
   setModel() {
     this.model = this.resource.scene;
     this.model.scale.setScalar(this.config.scale);
     this.scene.add(this.model);
+
+    this.position = new THREE.Vector3();
 
     console.log(this.model);
 

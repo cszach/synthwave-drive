@@ -25,8 +25,12 @@ export default class Terrain {
        *
        * Since we use the x and y coordinates to get the height, the z value can
        * be used to randomize terrains.
+       *
+       * Any Z-factor above 0.45 is good; that is when the point (0, 0, 0)
+       * where the car spawn is a floor (at least for the current floor
+       * elevation).
        */
-      zFactor: Math.random(),
+      zFactor: Math.random() * 0.55 + 0.45,
 
       /* We add noises at 3 different frequencies and amplitudes for interesting
       results (hopefully). */
