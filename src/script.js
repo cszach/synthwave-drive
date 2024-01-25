@@ -22,5 +22,13 @@ button.addEventListener("click", () => {
       opacity: 0,
       duration: 2,
     });
+
+    if (
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0 ||
+      navigator.msMaxTouchPoints > 0
+    ) {
+      experience.world.car.controls.setJoystick();
+    }
   }
 });
