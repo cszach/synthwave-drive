@@ -9,7 +9,6 @@ import sources from "./sources";
 import Keyboard from "./utils/Keyboard";
 import colorPalette from "./colorPalette";
 import CubeCamera from "./CubeCamera";
-import Audio from "./world/Audio";
 
 let instance = null;
 
@@ -39,8 +38,6 @@ export default class Experience {
     this.renderer = new Renderer();
     this.world = new World();
     this.cubeCamera = new CubeCamera();
-    this.audio = new Audio();
-    this.camera.instance.add(this.audio.listener);
 
     this.resources.on("ready", () => {
       if (this.debug.active) {
@@ -88,11 +85,11 @@ export default class Experience {
   }
 
   switchCameraTo(camera) {
-    this.camera.instance.remove(this.audio.listener);
+    this.camera.instance.remove(this.world.audio.listener);
     this.camera = camera;
     this.renderer.renderPass.camera = this.camera.instance;
     this.resize();
-    this.camera.instance.add(this.audio.listener);
+    this.camera.instance.add(this.world.audio.listener);
   }
 
   resize() {

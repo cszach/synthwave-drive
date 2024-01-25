@@ -1,9 +1,23 @@
 import * as THREE from "three";
 import Experience from "../Experience";
 
+function unlockAudioContext(audioCtx) {
+  if (audioCtx.state !== "suspended") return;
+  const b = document.body;
+  const events = ["touchstart", "touchend", "mousedown", "keydown"];
+  events.forEach((e) => b.addEventListener(e, unlock, false));
+  function unlock() {
+    audioCtx.resume().then(clean);
+  }
+  function clean() {
+    events.forEach((e) => b.removeEventListener(e, unlock));
+  }
+}
+
 export default class Audio {
   constructor() {
     this.experience = new Experience();
+    this.camera = this.experience.camera;
     this.scene = this.experience.scene;
     this.resources = this.experience.resources;
 
@@ -25,6 +39,8 @@ export default class Audio {
 
   setListener() {
     this.listener = new THREE.AudioListener();
+    unlockAudioContext(this.listener.context);
+    this.camera.instance.add(this.listener);
   }
 
   setAudio() {
