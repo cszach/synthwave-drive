@@ -46,7 +46,6 @@ export default class Resources extends EventEmitter {
       gltfLoader: new GLTFLoader(),
       objLoader: new OBJLoader(),
       textureLoader: new THREE.TextureLoader(),
-      cubeTextureLoader: new THREE.CubeTextureLoader(),
     };
 
     const dracoLoader = new DRACOLoader();
@@ -72,12 +71,6 @@ export default class Resources extends EventEmitter {
 
         case "texture":
           this.loaders.textureLoader.load(source.path, (file) => {
-            this.items[source.name] = file;
-          });
-          break;
-
-        case "cubeTexture":
-          this.loaders.cubeTextureLoader.load(source.path, (file) => {
             this.items[source.name] = file;
           });
           break;
