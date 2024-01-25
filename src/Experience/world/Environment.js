@@ -24,8 +24,8 @@ export default class Environment {
     this.skyMaterial = new THREE.ShaderMaterial({
       side: THREE.BackSide,
       uniforms: {
-        skyStart: { value: 0.8 },
-        skyEnd: { value: 0.2 },
+        skyStart: { value: 0.6 },
+        skyEnd: { value: 0.1 },
         topColor: { value: new THREE.Color(this.colorPalette.night) },
         bottomColor: { value: new THREE.Color(this.colorPalette.fuchsia) },
       },
