@@ -5,6 +5,7 @@ import Car from "./car/Car";
 import Terrain from "./Terrain";
 import Sun from "./Sun";
 import TreeSpawner from "./entities/TreeSpawner";
+import FrameSpawner from "./entities/FrameSpawner";
 import { gsap } from "gsap/gsap-core";
 
 export default class World {
@@ -19,10 +20,12 @@ export default class World {
       this.sun = new Sun();
       this.car = new Car();
       this.treeSpawner = TreeSpawner.new();
+      this.frameSpawner = FrameSpawner.new();
       this.environment = new Environment();
 
       gsap.delayedCall(1.5, () => {
         this.treeSpawner.spawn();
+        this.frameSpawner.spawn();
       });
 
       if (!this.debug.active) {
@@ -35,6 +38,7 @@ export default class World {
     this.car.update();
     this.sun.update();
     this.treeSpawner.update();
+    this.frameSpawner.update();
 
     // Update terrain: instead of moving the car, move the terrain instead.
     this.terrain.mesh.position.copy(this.car.position).negate();

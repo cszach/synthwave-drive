@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import Experience from "../Experience";
+import Experience from "../../Experience";
 
 export default class Frame {
   constructor() {
@@ -7,7 +7,7 @@ export default class Frame {
     this.scene = this.experience.scene;
     this.colorPalette = this.experience.colorPalette;
 
-    this.size = 10;
+    this.size = 25;
 
     this.setGeometry();
     this.setMaterial();
@@ -37,7 +37,7 @@ export default class Frame {
     );
     this.curvePath.closePath();
 
-    this.geometry = new THREE.TubeGeometry(this.curvePath, 4, 0.1, 2, true);
+    this.geometry = new THREE.TubeGeometry(this.curvePath, 4, 0.2, 4, true);
   }
 
   setMaterial() {
