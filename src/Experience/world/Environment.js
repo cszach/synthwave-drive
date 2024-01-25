@@ -26,7 +26,7 @@ export default class Environment {
       uniforms: {
         skyStart: { value: 0.6 },
         skyEnd: { value: 0.1 },
-        topColor: { value: new THREE.Color(this.colorPalette.night) },
+        topColor: { value: new THREE.Color(this.colorPalette.violet) },
         bottomColor: { value: new THREE.Color(this.colorPalette.fuchsia) },
       },
       vertexShader: skyVertexShader,
@@ -34,7 +34,7 @@ export default class Environment {
     });
 
     this.sky = new THREE.Mesh(this.skyGeometry, this.skyMaterial);
-    // this.sky.layers.enable(this.cubeCamera.layerNumber);
+    this.sky.layers.enable(this.cubeCamera.layerNumber);
 
     this.scene.add(this.sky);
   }

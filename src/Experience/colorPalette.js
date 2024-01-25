@@ -8,4 +8,5 @@ export default {
   cyan: "#03FFF0",
   green: "#3BE528",
   night: "#151515",
+  violet: "#360E4C",
 };

@@ -52,9 +52,9 @@ export default class Renderer {
     // Bloom pass
 
     this.bloomPass = new UnrealBloomPass();
-    this.bloomPass.strength = 0.333;
+    this.bloomPass.strength = 0.3;
     this.bloomPass.radius = 0.5;
-    this.bloomPass.threshold = 0.4;
+    this.bloomPass.threshold = 0.2;
     this.effectComposer.addPass(this.bloomPass);
 
     // Anti-aliasing pass, only if the browser does not support WebGL 2.

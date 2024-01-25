@@ -180,16 +180,16 @@ export default class Terrain {
 
   setMaterial() {
     this.terrainMaterial = new THREE.MeshLambertMaterial({
-      color: this.colorPalette.night,
+      color: this.colorPalette.violet,
       flatShading: true,
     });
 
     this.wireframeMaterial = new THREE.LineBasicMaterial({
-      color: this.colorPalette.fuchsia,
+      color: this.colorPalette.cyan,
     });
 
     this.floorMaterial = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(0xffffff),
+      color: 0x555555,
       envMap: this.cubeCamera.instance.renderTarget.texture,
     });
 
@@ -219,7 +219,7 @@ export default class Terrain {
 
     const floorMesh = new THREE.Mesh(this.floorGeometry, this.floorMaterial);
     floorMesh.position.z =
-      this.config.floorElevation * this.config.multiplier + 0.05;
+      this.config.floorElevation * this.config.multiplier + 0.01;
 
     const floorWireframeMesh = new THREE.LineSegments(
       this.floorWireframeGeometry,
@@ -284,6 +284,9 @@ export default class Terrain {
     terrainMaterialFolder
       .addColor(this.wireframeMaterial, "color")
       .name("wireframeColor");
+    terrainMaterialFolder
+      .addColor(this.floorMaterial, "color")
+      .name("floorColor");
     terrainMaterialFolder
       .addColor(this.floorWireframeMaterial, "color")
       .name("floorWireframeColor");

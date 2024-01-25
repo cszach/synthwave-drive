@@ -29,7 +29,7 @@ export default class Sun {
       /** "Compression" factor: more compression means more gaps. */
       compression: 4,
       /** The number to multiply the time with (to slow down or speed up animation). */
-      timeMultiplier: 0.001,
+      timeMultiplier: 0.003,
       /** The sun's radius in UV coordinate units. */
       sunRadius: 0.2,
       /** The UV y coordinate where the color interpolation starts (at the top). */

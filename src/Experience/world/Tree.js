@@ -36,7 +36,7 @@ export default class Trees {
 
   setMaterial() {
     this.material = new THREE.MeshLambertMaterial({
-      color: this.colorPalette.night,
+      color: this.colorPalette.violet,
       flatShading: true,
     });
   }

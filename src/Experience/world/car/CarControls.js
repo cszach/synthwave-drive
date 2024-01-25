@@ -18,7 +18,7 @@ export default class CarControls {
        * The steering angle applied on the steering wheels when turning left or
        * right.
        */
-      maxSteer: Math.PI / 8,
+      maxSteer: Math.PI / 16,
       /**
        * The force set on the brake when braking.
        */
