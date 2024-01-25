@@ -45,7 +45,7 @@ export default class Resources extends EventEmitter {
     this.loaders = {
       gltfLoader: new GLTFLoader(),
       objLoader: new OBJLoader(),
-      textureLoader: new THREE.TextureLoader(),
+      audioLoader: new THREE.AudioLoader(),
     };
 
     const dracoLoader = new DRACOLoader();
@@ -69,8 +69,8 @@ export default class Resources extends EventEmitter {
           });
           break;
 
-        case "texture":
-          this.loaders.textureLoader.load(source.path, (file) => {
+        case "audio":
+          this.loaders.audioLoader.load(source.path, (file) => {
             this.items[source.name] = file;
           });
           break;
