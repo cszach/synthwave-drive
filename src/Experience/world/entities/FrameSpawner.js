@@ -20,7 +20,20 @@ export default class FrameSpawner {
         yStart: -20,
         yEnd: 0,
       },
-      [cubeCamera.layerNumber]
+      [cubeCamera.layerNumber],
+      FrameSpawner.filter
     );
+  }
+
+  static filter(x, z) {
+    const experience = new Experience();
+    const terrain = experience.world.terrain;
+    const height = terrain.getHeight(x, z);
+
+    if (!height) {
+      return false;
+    }
+
+    return height <= 0;
   }
 }

@@ -40,7 +40,10 @@ export default class Spawner {
     materials,
     target = new THREE.Vector3(0, 0, 0),
     options = {},
-    layers = []
+    layers = [],
+    filter = () => {
+      return true;
+    }
   ) {
     this.experience = new Experience();
     this.scene = this.experience.scene;
@@ -54,6 +57,7 @@ export default class Spawner {
       yStart: options.yStart,
       yEnd: options.yEnd || 0,
     };
+    this.filter = filter;
 
     // Create the meshes
 
@@ -133,18 +137,21 @@ export default class Spawner {
 
     for (let i = 0; i < count; i++) {
       // Generate a random point in a circle.
+      let x, z;
 
-      const r = generationRadius * Math.sqrt(Math.random());
-      const theta = Math.random() * 2 * Math.PI;
+      do {
+        const r = generationRadius * Math.sqrt(Math.random());
+        const theta = Math.random() * 2 * Math.PI;
 
-      const x = r * Math.cos(theta);
-      const y = r * Math.sin(theta);
+        x = r * Math.cos(theta);
+        z = r * Math.sin(theta);
+      } while (!this.filter(this.target.x + x, this.target.z + z));
 
       const matrix = new THREE.Matrix4();
       matrix.makeRotationFromEuler(
         new THREE.Euler(0, Math.random() * Math.PI * 2, 0)
       );
-      matrix.setPosition(x, 0, y);
+      matrix.setPosition(x, 0, z);
 
       this.instancedMeshes.forEach((instancedMesh) => {
         instancedMesh.setMatrixAt(i, matrix);

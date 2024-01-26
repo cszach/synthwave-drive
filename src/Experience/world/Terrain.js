@@ -63,6 +63,14 @@ export default class Terrain {
       floorElevation: 0.4,
     };
 
+    this.sphere = new THREE.Mesh(
+      new THREE.SphereGeometry(5),
+      new THREE.MeshNormalMaterial()
+    );
+
+    // this.scene.add(this.sphere);
+    // this.scene.add(new THREE.AxesHelper());
+
     this.generateElevation();
     this.setGeometry();
     this.setMaterial();
@@ -132,6 +140,41 @@ export default class Terrain {
           elevation * this.config.multiplier;
       }
     }
+  }
+
+  /**
+   * Returns the height of the terrain at point X and Z (local).
+   *
+   * @param {number} x
+   * @param {number} z
+   * @returns false if X and Z are out of bounds, otherwise the height of the
+   * terrain at X and Z.
+   */
+  getHeight(x, z) {
+    const { width, depth, verticesWidth, verticesDepth } = this.config;
+    const halfWidth = width / 2;
+    const halfDepth = depth / 2;
+
+    if (x > halfWidth || x < -halfWidth || z > halfDepth || z < -halfDepth) {
+      return false;
+    }
+
+    const nx = (x + halfWidth) / width;
+    const nz = (z + halfDepth) / depth;
+
+    const vertexX = Math.floor(nx * verticesWidth);
+    const vertexZ = Math.floor(nz * verticesDepth);
+
+    const elevationIndex = vertexZ * verticesDepth + vertexX;
+
+    let y = this.elevation[elevationIndex];
+
+    // Test sphere
+
+    this.sphere.position.y =
+      y - this.config.multiplier * this.config.floorElevation;
+
+    return y - this.config.multiplier * this.config.floorElevation;
   }
 
   setGeometry() {
@@ -255,6 +298,29 @@ export default class Terrain {
     const debug = this.config;
 
     this.debugFolder = this.debug.ui.addFolder("Terrain");
+
+    this.debugFolder
+      .add(
+        this.sphere.position,
+        "x",
+        -this.config.width / 2,
+        this.config.width / 2,
+        1
+      )
+      .onChange(() => {
+        this.getHeight(this.sphere.position.x, this.sphere.position.z);
+      });
+    this.debugFolder
+      .add(
+        this.sphere.position,
+        "z",
+        -this.config.width / 2,
+        this.config.width / 2,
+        1
+      )
+      .onChange(() => {
+        this.getHeight(this.sphere.position.x, this.sphere.position.z);
+      });
 
     const terrainGeometryFolder = this.debugFolder
       .addFolder("Terrain geometry")
