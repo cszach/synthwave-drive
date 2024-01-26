@@ -76,27 +76,27 @@ export default class CarControls {
   setKeyBindings() {
     this.keyboard.on("keydown", (key) => {
       switch (key) {
-        case "w":
+        case "KeyW":
         case "ArrowUp":
           this.forward();
           break;
 
-        case "s":
+        case "KeyS":
         case "ArrowDown":
           this.backward();
           break;
 
-        case "a":
+        case "KeyA":
         case "ArrowLeft":
           this.left();
           break;
 
-        case "d":
+        case "KeyD":
         case "ArrowRight":
           this.right();
           break;
 
-        case "b":
+        case "KeyB":
           this.brake();
           break;
       }
@@ -104,21 +104,21 @@ export default class CarControls {
 
     this.keyboard.on("keyup", (key) => {
       switch (key) {
-        case "w":
+        case "KeyW":
         case "ArrowUp":
-        case "s":
+        case "KeyS":
         case "ArrowDown":
           this.reset();
           break;
 
-        case "a":
+        case "KeyA":
         case "ArrowLeft":
-        case "d":
+        case "KeyD":
         case "ArrowRight":
           this.resetSteer();
           break;
 
-        case "b":
+        case "KeyB":
           this.resetBrake();
           break;
       }
