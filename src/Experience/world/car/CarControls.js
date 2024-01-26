@@ -22,7 +22,7 @@ export default class CarControls {
       /**
        * The force set on the brake when braking.
        */
-      brakeForce: 1000,
+      brakeForce: 10,
     };
 
     this.setKeyBindings();
@@ -78,11 +78,13 @@ export default class CarControls {
       switch (key) {
         case "KeyW":
         case "ArrowUp":
+          this.resetBrake();
           this.forward();
           break;
 
         case "KeyS":
         case "ArrowDown":
+          this.resetBrake();
           this.backward();
           break;
 
@@ -95,10 +97,6 @@ export default class CarControls {
         case "ArrowRight":
           this.right();
           break;
-
-        case "KeyB":
-          this.brake();
-          break;
       }
     });
 
@@ -108,6 +106,7 @@ export default class CarControls {
         case "ArrowUp":
         case "KeyS":
         case "ArrowDown":
+          this.brake();
           this.reset();
           break;
 
@@ -116,10 +115,6 @@ export default class CarControls {
         case "KeyD":
         case "ArrowRight":
           this.resetSteer();
-          break;
-
-        case "KeyB":
-          this.resetBrake();
           break;
       }
     });
