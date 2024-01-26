@@ -52,16 +52,16 @@ export default class Experience {
 
       this.keyboard.on("keydown", (key) => {
         switch (key) {
-          case "1":
+          case "Digit1":
             this.switchCameraTo(this.world.car.camera);
             break;
 
-          case "0":
-            if (this.debug.active) {
-              this.switchCameraTo(this.debug.camera);
-            } else {
-              console.error("Debug is not active");
-            }
+          case "Digit2":
+            // if (this.debug.active) {
+            this.switchCameraTo(this.debug.camera);
+            // } else {
+            //   console.error("Debug is not active");
+            // }
             break;
         }
       });
