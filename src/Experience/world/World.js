@@ -22,7 +22,9 @@ export default class World {
       this.treeSpawner = TreeSpawner.new();
       this.frameSpawner = FrameSpawner.new();
       this.environment = new Environment();
-      this.audio = new Audio();
+      setTimeout(() => {
+        this.audio = new Audio();
+      }, 1000);
 
       gsap.delayedCall(1.5, () => {
         this.treeSpawner.spawn();

@@ -85,11 +85,13 @@ export default class Experience {
   }
 
   switchCameraTo(camera) {
-    this.camera.instance.remove(this.world.audio.listener);
+    const audio = this.world.audio;
+
+    if (audio) this.camera.instance.remove(this.world.audio.listener);
     this.camera = camera;
     this.renderer.renderPass.camera = this.camera.instance;
     this.resize();
-    this.camera.instance.add(this.world.audio.listener);
+    if (audio) this.camera.instance.add(this.world.audio.listener);
   }
 
   resize() {
