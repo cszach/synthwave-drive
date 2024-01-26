@@ -78,6 +78,7 @@ export default class Car {
     // Reflective materials
 
     this.carBody = this.model.getObjectByName("car_body");
+    this.carBody.material.roughness = 0; // WE MAKE THAT THANG SUPER SHINY
 
     this.model.traverse((child) => {
       if (child.isMesh) {
@@ -120,6 +121,8 @@ export default class Car {
     this.debugFolder
       .add(this.config.carPosAdjust, "z", -1, 1, 0.001)
       .name("carPosAdjustZ");
+    this.debugFolder.add(this.carBody.material, "roughness", 0, 1, 0.01);
+    this.debugFolder.add(this.carBody.material, "metalness", 0, 1, 0.01);
     this.debugFolder
       .add(this.config, "envMapIntensity", 0, 10, 0.1)
       .onChange(() => {
