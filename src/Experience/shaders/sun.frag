@@ -23,8 +23,7 @@ float wave(float x) {
 }
 
 void main() {
-  bool isSun = step(distance(vUv, vec2(0.5)), sunRadius) == 1.0;
-  float alpha = isSun ? 1.0 : 0.0;
+  float alpha = step(distance(vUv, vec2(0.5)), sunRadius);
 
   if (vUv.y < gapsLower && vUv.y > gapsUpper && wave(vUv.y) > 0.0) {
     alpha = 0.0;

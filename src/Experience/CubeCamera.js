@@ -17,17 +17,12 @@ export default class CubeCamera {
   }
 
   setInstance() {
-    this.instance = new THREE.CubeCamera(1, 20000, this.renderTarget);
+    this.instance = new THREE.CubeCamera(0.1, 1250, this.renderTarget);
     this.instance.layers.set(this.layerNumber);
     this.scene.add(this.instance);
   }
 
   update() {
-    const car = this.experience.world.car;
-
-    if (car) {
-      this.instance.position.copy(car.model.position);
-      this.instance.update(this.renderer.instance, this.scene);
-    }
+    this.instance.update(this.renderer.instance, this.scene);
   }
 }
