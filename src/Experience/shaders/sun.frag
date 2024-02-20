@@ -23,11 +23,9 @@ float wave(float x) {
 }
 
 void main() {
-  float alpha = step(distance(vUv, vec2(0.5)), sunRadius);
-
-  if (vUv.y < gapsLower && vUv.y > gapsUpper && wave(vUv.y) > 0.0) {
-    alpha = 0.0;
-  }
+  float alpha =
+      step(distance(vUv, vec2(0.5)), sunRadius) * // circle
+      float(vUv.y > gapsLower || vUv.y < gapsUpper || wave(vUv.y) < 0.0); // gap
 
   float lerpValue = (vUv.y - lerpStart) / (lerpEnd - lerpStart);
   gl_FragColor = vec4(mix(topColor, bottomColor, lerpValue), alpha);

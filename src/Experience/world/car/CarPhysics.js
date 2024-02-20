@@ -88,8 +88,12 @@ export default class CarPhysics {
   }
 
   setWorld() {
-    this.physicsWorld = new CANNON.World();
-    this.physicsWorld.gravity.set(0, -9.82, 0);
+    this.solver = new CANNON.SplitSolver(new CANNON.GSSolver());
+    this.solver.iterations = 1;
+    this.physicsWorld = new CANNON.World({
+      gravity: new CANNON.Vec3(0, -9.82, 0),
+      solver: this.solver,
+    });
     this.physicsWorld.broadphase = new CANNON.SAPBroadphase(this.physicsWorld);
     this.physicsWorld.defaultContactMaterial.friction = 0;
   }
@@ -394,7 +398,7 @@ export default class CarPhysics {
   }
 
   update() {
-    this.physicsWorld.step(1 / 60, this.time.delta, 3);
+    this.physicsWorld.step(1 / 60, this.time.delta);
 
     if (this.debug.active) {
       this.chassisHelperMesh.position.copy(this.chassisBody.position);
